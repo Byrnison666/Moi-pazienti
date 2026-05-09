@@ -1,0 +1,137 @@
+import React, { useMemo, useState } from 'react';
+import { Pressable, SectionList, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { CommonActions, useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../context/ThemeContext';
+import { useData } from '../context/DataContext';
+import { AppointmentCard } from '../components/AppointmentCard';
+import { EmptyState } from '../components/EmptyState';
+import { AppButton } from '../components/AppButton';
+import { compareDates, isFutureDate } from '../utils/date';
+import { Appointment } from '../types';
+
+interface Row { appointment: Appointment; patientId: string; patientName: string }
+
+export function ScheduleScreen() {
+  const t = useTheme();
+  const { data } = useData();
+  const navigation = useNavigation<any>();
+  const [tab, setTab] = useState<'upcoming' | 'past'>('upcoming');
+
+  const all: Row[] = useMemo(() => {
+    return data.patients.flatMap(p => p.appointments.map(a => ({
+      appointment: a, patientId: p.id, patientName: p.fullName,
+    })));
+  }, [data.patients]);
+
+  const upcoming = useMemo(
+    () => all.filter(r => isFutureDate(r.appointment.date)).sort((a, b) => compareDates(a.appointment.date, b.appointment.date)),
+    [all],
+  );
+  const past = useMemo(
+    () => all.filter(r => !isFutureDate(r.appointment.date)).sort((a, b) => compareDates(b.appointment.date, a.appointment.date)),
+    [all],
+  );
+
+  const list = tab === 'upcoming' ? upcoming : past;
+
+  const grouped = useMemo(() => {
+    const m = new Map<string, Row[]>();
+    for (const r of list) {
+      const key = r.appointment.date;
+      const arr = m.get(key) ?? [];
+      arr.push(r);
+      m.set(key, arr);
+    }
+    return Array.from(m.entries()).map(([date, items]) => ({ title: date, data: items }));
+  }, [list]);
+
+  const goAdd = () => {
+    if (data.patients.length === 0) return;
+    navigation.navigate('PickPatientForAppointment');
+  };
+
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: t.colors.background }} edges={['top']}>
+      <View style={{ paddingHorizontal: t.spacing(4), paddingTop: t.spacing(2) }}>
+        <Text style={{ color: t.colors.text, fontSize: t.fontSize.xxl, fontWeight: '700' }}>Расписание</Text>
+        <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.sm, marginTop: 2 }}>
+          Все приемы пациентов
+        </Text>
+      </View>
+
+      <View style={[styles.tabs, { marginHorizontal: t.spacing(4), marginTop: t.spacing(3), backgroundColor: t.colors.surfaceAlt, borderRadius: t.radius.md }]}>
+        <TabBtn label={`Предстоящие (${upcoming.length})`} active={tab === 'upcoming'} onPress={() => setTab('upcoming')} />
+        <TabBtn label={`Прошедшие (${past.length})`} active={tab === 'past'} onPress={() => setTab('past')} />
+      </View>
+
+      {grouped.length === 0 ? (
+        <EmptyState
+          icon="calendar-outline"
+          title={tab === 'upcoming' ? 'Нет предстоящих приемов' : 'Прошедших приемов нет'}
+          subtitle={tab === 'upcoming' ? 'Добавьте прием — он появится в расписании.' : undefined}
+          actionTitle={tab === 'upcoming' && data.patients.length > 0 ? 'Добавить прием' : undefined}
+          onAction={tab === 'upcoming' && data.patients.length > 0 ? goAdd : undefined}
+        />
+      ) : (
+        <SectionList
+          sections={grouped}
+          keyExtractor={r => r.appointment.id}
+          contentContainerStyle={{ padding: t.spacing(4), paddingBottom: 90 }}
+          renderSectionHeader={({ section }) => <DateHeader iso={section.title} />}
+          renderItem={({ item }) => (
+            <AppointmentCard
+              appointment={item.appointment}
+              patientName={item.patientName}
+              onPress={() => navigation.navigate('PatientDetail', { patientId: item.patientId })}
+              onEdit={() => navigation.navigate('AppointmentEdit', { patientId: item.patientId, appointmentId: item.appointment.id })}
+            />
+          )}
+        />
+      )}
+
+      {tab === 'upcoming' && data.patients.length > 0 ? (
+        <View style={{ position: 'absolute', bottom: t.spacing(5) + 60, right: t.spacing(4) }}>
+          <AppButton title="Добавить" icon="add" onPress={goAdd} />
+        </View>
+      ) : null}
+    </SafeAreaView>
+  );
+}
+
+function TabBtn({ label, active, onPress }: { label: string; active: boolean; onPress: () => void }) {
+  const t = useTheme();
+  return (
+    <Pressable
+      onPress={onPress}
+      style={[
+        styles.tab,
+        { backgroundColor: active ? t.colors.surface : 'transparent', borderRadius: t.radius.sm },
+      ]}
+    >
+      <Text style={{ color: active ? t.colors.primary : t.colors.textMuted, fontWeight: '600', fontSize: 14 }}>{label}</Text>
+    </Pressable>
+  );
+}
+
+function DateHeader({ iso }: { iso: string }) {
+  const t = useTheme();
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
+      <Ionicons name="ellipse" size={6} color={t.colors.primary} />
+      <Text style={{ color: t.colors.text, fontSize: t.fontSize.md, fontWeight: '700', marginLeft: 8 }}>
+        {(() => {
+          const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
+          if (!m) return iso;
+          return `${m[3]}.${m[2]}.${m[1]}`;
+        })()}
+      </Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  tabs: { flexDirection: 'row', padding: 4 },
+  tab: { flex: 1, paddingVertical: 10, alignItems: 'center' },
+});
