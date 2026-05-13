@@ -3,6 +3,7 @@ import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '../context/ThemeContext';
 import {
@@ -126,6 +127,7 @@ function SettingsStackNav() {
 
 export function AppNavigator() {
   const t = useTheme();
+  const insets = useSafeAreaInsets();
   const navTheme = t.mode === 'dark'
     ? { ...DarkTheme, colors: { ...DarkTheme.colors, background: t.colors.background, card: t.colors.surface, primary: t.colors.primary, text: t.colors.text, border: t.colors.border } }
     : { ...DefaultTheme, colors: { ...DefaultTheme.colors, background: t.colors.background, card: t.colors.surface, primary: t.colors.primary, text: t.colors.text, border: t.colors.border } };
@@ -140,8 +142,8 @@ export function AppNavigator() {
           tabBarStyle: {
             backgroundColor: t.colors.surface,
             borderTopColor: t.colors.border,
-            height: 64,
-            paddingBottom: 8,
+            height: 64 + insets.bottom,
+            paddingBottom: 8 + insets.bottom,
             paddingTop: 6,
           },
           tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },

@@ -1,58 +1,55 @@
 <svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#3FC4C9"/>
-      <stop offset="55%" stop-color="#2BB1B7"/>
-      <stop offset="100%" stop-color="#1A7AA0"/>
+    <linearGradient id="premium-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#020617"/>
     </linearGradient>
-    <radialGradient id="shine" cx="28%" cy="22%" r="55%">
-      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.35"/>
-      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
-    </radialGradient>
-    <filter id="soft" x="-10%" y="-10%" width="120%" height="120%">
-      <feGaussianBlur stdDeviation="8"/>
+    <linearGradient id="gold-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FDE68A"/>
+      <stop offset="50%" stop-color="#D4AF37"/>
+      <stop offset="100%" stop-color="#B45309"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="15" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
     </filter>
   </defs>
 
-  <rect width="1024" height="1024" fill="url(#bg)"/>
-  <rect width="1024" height="1024" fill="url(#shine)"/>
+  <!-- Background -->
+  <rect width="1024" height="1024" rx="200" fill="url(#premium-bg)"/>
+  
+  <!-- Subtle inner border -->
+  <rect x="20" y="20" width="984" height="984" rx="180" fill="none" stroke="url(#gold-gradient)" stroke-width="2" opacity="0.3"/>
 
-  <!-- Soft drop shadow under tooth -->
-  <ellipse cx="512" cy="780" rx="220" ry="20" fill="#0A3E54" opacity="0.18" filter="url(#soft)"/>
-
-  <!-- Tooth -->
-  <g transform="translate(512 530)">
-    <path fill="#FFFFFF" d="
-      M -210 -250
-      C -290 -250 -325 -180 -310 -90
-      L -278 100
-      C -260 220 -228 320 -185 350
-      C -140 380 -108 350 -98 280
-      L -78 145
-      C -72 112 -50 95 -28 95
-      C -8 95 6 112 10 145
-      L 14 200
-      C 14 215 24 215 24 200
-      L 28 145
-      C 32 112 46 95 66 95
-      C 88 95 110 112 116 145
-      L 136 280
-      C 146 350 178 380 223 350
-      C 266 320 298 220 316 100
-      L 348 -90
-      C 363 -180 328 -250 248 -250
-      C 178 -250 130 -218 78 -218
-      L -50 -218
-      C -110 -218 -150 -250 -210 -250
+  <!-- Tooth Logo -->
+  <g transform="translate(512 512) scale(0.9)">
+    <path fill="url(#gold-gradient)" filter="url(#glow)" d="
+      M -150 -250
+      C -220 -250 -280 -200 -280 -120
+      L -250 150
+      C -240 250 -200 320 -150 340
+      C -110 355 -80 320 -70 260
+      L -50 100
+      C -45 60 -25 45 0 45
+      C 25 45 45 60 50 100
+      L 70 260
+      C 80 320 110 355 150 340
+      C 200 320 240 250 250 150
+      L 280 -120
+      C 280 -200 220 -250 150 -250
+      C 100 -250 60 -220 0 -220
+      C -60 -220 -100 -250 -150 -250
       Z
     "/>
-    <!-- gloss highlight -->
-    <path fill="#FFFFFF" opacity="0.55" d="
-      M -195 -195
-      C -240 -180 -260 -135 -245 -75
-      C -235 -30 -220 0 -200 -10
-      C -180 -20 -178 -80 -188 -130
-      C -195 -170 -180 -200 -195 -195 Z
+    <!-- Shine highlight on the tooth -->
+    <path fill="#FFFFFF" opacity="0.4" d="
+      M -130 -210
+      C -180 -210 -220 -180 -220 -120
+      L -205 50
+      C -200 100 -180 130 -160 140
+      L -165 -100
+      C -165 -150 -150 -180 -130 -210
+      Z
     "/>
   </g>
 </svg>

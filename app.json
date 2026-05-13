@@ -2,16 +2,18 @@
   "expo": {
     "name": "Мои пациенты",
     "slug": "dental-patients",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "default",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#F4FBFD"
+      "backgroundColor": "#020617"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.dentalpatients.app"
@@ -20,13 +22,20 @@
       "package": "com.dentalpatients.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#1F8FB8"
+        "backgroundColor": "#020617"
       }
     },
     "web": {
       "bundler": "metro",
       "favicon": "./assets/favicon.png"
     },
-    "plugins": ["expo-document-picker"]
+    "plugins": [
+      "expo-document-picker"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "f6addf34-a5fd-4bc9-9ac5-f11dc79b8731"
+      }
+    }
   }
 }

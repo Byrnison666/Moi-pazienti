@@ -28,7 +28,7 @@ export function SettingsScreen() {
             ПРИЛОЖЕНИЕ
           </Text>
           <InfoRow label="Название" value="Мои пациенты" />
-          <InfoRow label="Версия" value="1.0.0" />
+          <InfoRow label="Версия" value="1.1.0" />
         </Card>
 
         <Card style={{ marginTop: 16 }}>
