@@ -1,6 +1,7 @@
 import { AppData, Patient, QuestionnaireTemplate } from '../types';
 import { newId } from '../utils/id';
 import { nowISO, todayISODate } from '../utils/date';
+import { SCHEMA_VERSION } from './index';
 
 function addDays(iso: string, days: number): string {
   const d = new Date(iso);
@@ -129,10 +130,13 @@ export function buildDemoData(): { data: AppData } {
   const data: AppData = {
     patients: [patient1, patient2],
     templates: [template],
+    journal: [],
     demoIds: {
       patients: [patient1Id, patient2Id],
       templates: [tplId],
     },
+    updatedAt: now,
+    schemaVersion: SCHEMA_VERSION,
   };
 
   return { data };

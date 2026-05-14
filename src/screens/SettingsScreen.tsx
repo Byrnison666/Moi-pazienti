@@ -1,22 +1,19 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import { useTheme, useThemeControls } from '../context/ThemeContext';
-import { useData } from '../context/DataContext';
 import { Card } from '../components/Card';
-import { AppButton } from '../components/AppButton';
-import { ConfirmDialog } from '../components/ConfirmDialog';
 import { ThemeMode } from '../types';
+import { SyncState, subscribeSync } from '../sync/syncManager';
 
 export function SettingsScreen() {
   const t = useTheme();
+  const nav = useNavigation<any>();
   const { mode, setMode } = useThemeControls();
-  const { resetAll, clearDemo, reseedDemo, data } = useData();
-  const [confirmReset, setConfirmReset] = useState(false);
-  const [confirmClearDemo, setConfirmClearDemo] = useState(false);
-
-  const hasDemo = data.demoIds.patients.length > 0 || data.demoIds.templates.length > 0;
+  const [sync, setSync] = useState<SyncState>({ status: 'unconfigured' });
+  useEffect(() => subscribeSync(setSync), []);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: t.colors.background }} edges={['top']}>
@@ -28,8 +25,27 @@ export function SettingsScreen() {
             ПРИЛОЖЕНИЕ
           </Text>
           <InfoRow label="Название" value="Мои пациенты" />
-          <InfoRow label="Версия" value="1.1.0" />
+          <InfoRow label="Версия" value="1.2.0" />
         </Card>
+
+        <Pressable onPress={() => nav.navigate('SyncSettings')}>
+          <Card style={{ marginTop: 16 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+              <View style={{ flex: 1 }}>
+                <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.xs, fontWeight: '600', marginBottom: 4 }}>
+                  СИНХРОНИЗАЦИЯ
+                </Text>
+                <Text style={{ color: t.colors.text, fontSize: t.fontSize.md, fontWeight: '600' }}>
+                  Яндекс.Диск (WebDAV)
+                </Text>
+                <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.sm, marginTop: 4 }}>
+                  {syncSubtitle(sync)}
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color={t.colors.textMuted} />
+            </View>
+          </Card>
+        </Pressable>
 
         <Card style={{ marginTop: 16 }}>
           <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.xs, fontWeight: '600', marginBottom: 12 }}>
@@ -41,68 +57,19 @@ export function SettingsScreen() {
             <ThemeOption mode="dark" current={mode} onPress={setMode} label="Тёмная" icon="moon-outline" />
           </View>
         </Card>
-
-        <Card style={{ marginTop: 16 }}>
-          <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.xs, fontWeight: '600', marginBottom: 12 }}>
-            ДЕМО-ДАННЫЕ
-          </Text>
-          <Text style={{ color: t.colors.text, fontSize: t.fontSize.sm, marginBottom: 12 }}>
-            При первом запуске добавляются примеры пациентов и шаблон анкеты. Их можно удалить или восстановить.
-          </Text>
-          <View style={{ gap: 8 }}>
-            <AppButton
-              title={hasDemo ? 'Удалить демо-данные' : 'Демо уже удалены'}
-              variant="secondary"
-              icon="trash-outline"
-              fullWidth
-              disabled={!hasDemo}
-              onPress={() => setConfirmClearDemo(true)}
-            />
-            <AppButton
-              title="Восстановить демо"
-              variant="ghost"
-              icon="refresh-outline"
-              fullWidth
-              onPress={reseedDemo}
-            />
-          </View>
-        </Card>
-
-        <Card style={{ marginTop: 16 }}>
-          <Text style={{ color: t.colors.danger, fontSize: t.fontSize.xs, fontWeight: '600', marginBottom: 12 }}>
-            ОПАСНАЯ ЗОНА
-          </Text>
-          <Text style={{ color: t.colors.text, fontSize: t.fontSize.sm, marginBottom: 12 }}>
-            Удалить ВСЕ локальные данные: пациентов, заметки, приемы, файлы и анкеты.
-          </Text>
-          <AppButton
-            title="Очистить все данные"
-            variant="danger"
-            icon="alert-circle-outline"
-            fullWidth
-            onPress={() => setConfirmReset(true)}
-          />
-        </Card>
       </ScrollView>
-
-      <ConfirmDialog
-        visible={confirmReset}
-        title="Очистить все локальные данные?"
-        message="Это действие нельзя отменить. Все пациенты, приемы, заметки, файлы и шаблоны анкет будут удалены."
-        confirmTitle="Удалить всё"
-        onCancel={() => setConfirmReset(false)}
-        onConfirm={async () => { setConfirmReset(false); await resetAll(); }}
-      />
-      <ConfirmDialog
-        visible={confirmClearDemo}
-        title="Удалить демо-данные?"
-        message="Будут удалены только пациенты и шаблоны, добавленные как демо. Ваши собственные данные не пострадают."
-        confirmTitle="Удалить"
-        onCancel={() => setConfirmClearDemo(false)}
-        onConfirm={() => { setConfirmClearDemo(false); clearDemo(); }}
-      />
     </SafeAreaView>
   );
+}
+
+function syncSubtitle(s: SyncState): string {
+  switch (s.status) {
+    case 'unconfigured': return 'Не настроена — нажмите для подключения';
+    case 'idle': return s.lastSyncedAt ? 'Включена, всё синхронизировано' : 'Включена';
+    case 'syncing': return 'Синхронизация…';
+    case 'offline': return 'Нет соединения';
+    case 'error': return 'Ошибка синхронизации';
+  }
 }
 
 function InfoRow({ label, value }: { label: string; value: string }) {

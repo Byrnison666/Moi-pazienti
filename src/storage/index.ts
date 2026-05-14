@@ -4,10 +4,15 @@ import { AppData, AppSettings } from '../types';
 const KEY_DATA = 'dental:data:v1';
 const KEY_SETTINGS = 'dental:settings:v1';
 
+export const SCHEMA_VERSION = 1;
+
 const EMPTY_DATA: AppData = {
   patients: [],
   templates: [],
+  journal: [],
   demoIds: { patients: [], templates: [] },
+  updatedAt: new Date(0).toISOString(),
+  schemaVersion: SCHEMA_VERSION,
 };
 
 const DEFAULT_SETTINGS: AppSettings = {
@@ -18,11 +23,15 @@ export async function loadData(): Promise<AppData | null> {
   try {
     const raw = await AsyncStorage.getItem(KEY_DATA);
     if (!raw) return null;
-    const parsed = JSON.parse(raw) as AppData;
+    const parsed = JSON.parse(raw) as Partial<AppData>;
     return {
       patients: parsed.patients ?? [],
       templates: parsed.templates ?? [],
+      journal: parsed.journal ?? [],
       demoIds: parsed.demoIds ?? { patients: [], templates: [] },
+      // миграция: данные без метки получают текущее время, чтобы их не затёрло пустым удалённым снапшотом
+      updatedAt: parsed.updatedAt ?? new Date().toISOString(),
+      schemaVersion: parsed.schemaVersion ?? SCHEMA_VERSION,
     };
   } catch (e) {
     console.warn('loadData failed', e);

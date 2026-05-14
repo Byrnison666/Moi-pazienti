@@ -27,14 +27,21 @@ export type QuestionnairesStackParamList = {
   QuestionnaireEditor: { templateId?: string };
 };
 
+export type NotesStackParamList = {
+  NotesList: undefined;
+  JournalEntryEdit: { entryId?: string };
+};
+
 export type SettingsStackParamList = {
   SettingsHome: undefined;
+  SyncSettings: undefined;
 };
 
 export type RootTabParamList = {
   PatientsTab: NavigatorScreenParams<PatientsStackParamList>;
   ScheduleTab: NavigatorScreenParams<ScheduleStackParamList>;
   AddPatientTab: NavigatorScreenParams<AddPatientStackParamList>;
+  NotesTab: NavigatorScreenParams<NotesStackParamList>;
   QuestionnairesTab: NavigatorScreenParams<QuestionnairesStackParamList>;
   SettingsTab: NavigatorScreenParams<SettingsStackParamList>;
 };

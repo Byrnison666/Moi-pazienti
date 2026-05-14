@@ -3,16 +3,18 @@ import {
   AppData,
   Appointment,
   ID,
+  JournalEntry,
   Note,
   Patient,
   PatientFile,
   PatientQuestionnaire,
   QuestionnaireTemplate,
 } from '../types';
-import { clearData, loadData, saveData, STORAGE_EMPTY } from '../storage';
+import { clearData, loadData, saveData, SCHEMA_VERSION, STORAGE_EMPTY } from '../storage';
 import { buildDemoData } from '../storage/demo';
 import { newId } from '../utils/id';
 import { calcAge, nowISO } from '../utils/date';
+import { bindAppState, schedulePush, setOnRemoteSnapshot, syncOnLaunch } from '../sync/syncManager';
 
 interface DataContextValue {
   ready: boolean;
@@ -49,6 +51,11 @@ interface DataContextValue {
   updatePatientQuestionnaire: (patientId: ID, qId: ID, patch: Partial<PatientQuestionnaire>) => void;
   deletePatientQuestionnaire: (patientId: ID, qId: ID) => void;
 
+  // Journal (личный блокнот)
+  addJournalEntry: (e: Omit<JournalEntry, 'id' | 'createdAt' | 'updatedAt'>) => JournalEntry;
+  updateJournalEntry: (id: ID, patch: Partial<JournalEntry>) => void;
+  deleteJournalEntry: (id: ID) => void;
+
   // Bulk ops
   resetAll: () => Promise<void>;
   clearDemo: () => void;
@@ -67,24 +74,44 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const dataRef = useRef<AppData>(STORAGE_EMPTY);
 
   const persist = useCallback((next: AppData) => {
-    dataRef.current = next;
-    setData(next);
-    saveData(next);
+    const stamped: AppData = { ...next, updatedAt: nowISO(), schemaVersion: SCHEMA_VERSION };
+    dataRef.current = stamped;
+    setData(stamped);
+    saveData(stamped);
+    schedulePush(stamped);
   }, []);
 
   useEffect(() => {
+    let mounted = true;
+    bindAppState();
+    setOnRemoteSnapshot((remote) => {
+      if (!mounted) return;
+      dataRef.current = remote;
+      setData(remote);
+      saveData(remote);
+    });
     (async () => {
       const loaded = await loadData();
+      let initial: AppData;
       if (loaded === null) {
         const { data: demo } = buildDemoData();
-        persist(demo);
+        initial = demo;
+        dataRef.current = demo;
+        setData(demo);
+        await saveData(demo);
       } else {
+        initial = loaded;
         dataRef.current = loaded;
         setData(loaded);
       }
       setReady(true);
+      void syncOnLaunch(initial);
     })();
-  }, [persist]);
+    return () => {
+      mounted = false;
+      setOnRemoteSnapshot(null);
+    };
+  }, []);
 
   const updatePatientById = (state: AppData, id: ID, fn: (p: Patient) => Patient): AppData => ({
     ...state,
@@ -252,15 +279,42 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       })));
     },
 
+    addJournalEntry: (e) => {
+      const at = nowISO();
+      const entry: JournalEntry = { id: newId(), createdAt: at, updatedAt: at, ...e };
+      persist({ ...dataRef.current, journal: [entry, ...dataRef.current.journal] });
+      return entry;
+    },
+
+    updateJournalEntry: (id, patch) => {
+      const at = nowISO();
+      persist({
+        ...dataRef.current,
+        journal: dataRef.current.journal.map(e => e.id === id ? { ...e, ...patch, updatedAt: at } : e),
+      });
+    },
+
+    deleteJournalEntry: (id) => {
+      persist({ ...dataRef.current, journal: dataRef.current.journal.filter(e => e.id !== id) });
+    },
+
     resetAll: async () => {
       await clearData();
-      const empty: AppData = { patients: [], templates: [], demoIds: { patients: [], templates: [] } };
+      const empty: AppData = {
+        patients: [],
+        templates: [],
+        journal: [],
+        demoIds: { patients: [], templates: [] },
+        updatedAt: nowISO(),
+        schemaVersion: 1,
+      };
       persist(empty);
     },
 
     clearDemo: () => {
       const { demoIds } = dataRef.current;
       persist({
+        ...dataRef.current,
         patients: dataRef.current.patients.filter(p => !demoIds.patients.includes(p.id)),
         templates: dataRef.current.templates.filter(t => !demoIds.templates.includes(t.id)),
         demoIds: { patients: [], templates: [] },
@@ -270,6 +324,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     reseedDemo: () => {
       const { data: demo } = buildDemoData();
       persist({
+        ...dataRef.current,
         patients: [...demo.patients, ...dataRef.current.patients],
         templates: [...demo.templates, ...dataRef.current.templates],
         demoIds: {

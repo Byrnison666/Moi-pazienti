@@ -98,14 +98,31 @@ export interface Patient {
   updatedAt: ISODate;
 }
 
+export type JournalKind = 'note' | 'wish' | 'goal';
+
+export interface JournalEntry {
+  id: ID;
+  kind: JournalKind;
+  title?: string;
+  text: string;
+  done?: boolean;
+  createdAt: ISODate;
+  updatedAt: ISODate;
+}
+
 export interface AppData {
   patients: Patient[];
   templates: QuestionnaireTemplate[];
+  /** Личный блокнот: заметки, желания, цели. Не связаны с пациентами. */
+  journal: JournalEntry[];
   /** Для возможности отличать демо-данные. Список ID, добавленных как demo. */
   demoIds: {
     patients: ID[];
     templates: ID[];
   };
+  /** ISO-метка последней мутации снапшота. Используется для LWW-синка. */
+  updatedAt: ISODate;
+  schemaVersion: number;
 }
 
 export type ThemeMode = 'light' | 'dark' | 'system';

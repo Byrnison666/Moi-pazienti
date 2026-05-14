@@ -8,6 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../context/ThemeContext';
 import {
   AddPatientStackParamList,
+  NotesStackParamList,
   PatientsStackParamList,
   QuestionnairesStackParamList,
   RootTabParamList,
@@ -27,12 +28,17 @@ import { QuestionnairesScreen } from '../screens/QuestionnairesScreen';
 import { QuestionnaireEditorScreen } from '../screens/QuestionnaireEditorScreen';
 import { QuestionnaireFillScreen } from '../screens/QuestionnaireFillScreen';
 import { QuestionnaireViewScreen } from '../screens/QuestionnaireViewScreen';
+import { NotesScreen } from '../screens/NotesScreen';
+import { JournalEntryEditScreen } from '../screens/JournalEntryEditScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
+import { SyncSettingsScreen } from '../screens/SyncSettingsScreen';
+import { SyncStatusOverlay } from '../components/SyncStatusOverlay';
 
 const PatientsStack = createNativeStackNavigator<PatientsStackParamList>();
 const ScheduleStack = createNativeStackNavigator<ScheduleStackParamList>();
 const AddPatientStack = createNativeStackNavigator<AddPatientStackParamList>();
 const QuestionnairesStack = createNativeStackNavigator<QuestionnairesStackParamList>();
+const NotesStack = createNativeStackNavigator<NotesStackParamList>();
 const SettingsStack = createNativeStackNavigator<SettingsStackParamList>();
 const Tab = createBottomTabNavigator<RootTabParamList>();
 
@@ -110,6 +116,23 @@ function QuestionnairesStackNav() {
   );
 }
 
+function NotesStackNav() {
+  const t = useTheme();
+  return (
+    <NotesStack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: t.colors.background },
+        headerTintColor: t.colors.text,
+        headerTitleStyle: { fontWeight: '700' },
+        contentStyle: { backgroundColor: t.colors.background },
+      }}
+    >
+      <NotesStack.Screen name="NotesList" component={NotesScreen} options={{ headerShown: false }} />
+      <NotesStack.Screen name="JournalEntryEdit" component={JournalEntryEditScreen} options={{ title: 'Запись' }} />
+    </NotesStack.Navigator>
+  );
+}
+
 function SettingsStackNav() {
   const t = useTheme();
   return (
@@ -121,6 +144,7 @@ function SettingsStackNav() {
       }}
     >
       <SettingsStack.Screen name="SettingsHome" component={SettingsScreen} options={{ headerShown: false }} />
+      <SettingsStack.Screen name="SyncSettings" component={SyncSettingsScreen} options={{ title: 'Синхронизация' }} />
     </SettingsStack.Navigator>
   );
 }
@@ -134,6 +158,7 @@ export function AppNavigator() {
 
   return (
     <NavigationContainer theme={navTheme}>
+      <SyncStatusOverlay />
       <Tab.Navigator
         screenOptions={({ route }) => ({
           headerShown: false,
@@ -152,6 +177,7 @@ export function AppNavigator() {
               PatientsTab: 'people-outline',
               ScheduleTab: 'calendar-outline',
               AddPatientTab: 'add-circle',
+              NotesTab: 'book-outline',
               QuestionnairesTab: 'clipboard-outline',
               SettingsTab: 'settings-outline',
             };
@@ -162,6 +188,7 @@ export function AppNavigator() {
         <Tab.Screen name="PatientsTab" component={PatientsStackNav} options={{ tabBarLabel: 'Пациенты' }} />
         <Tab.Screen name="ScheduleTab" component={ScheduleStackNav} options={{ tabBarLabel: 'Расписание' }} />
         <Tab.Screen name="AddPatientTab" component={AddPatientStackNav} options={{ tabBarLabel: 'Добавить' }} />
+        <Tab.Screen name="NotesTab" component={NotesStackNav} options={{ tabBarLabel: 'Заметки' }} />
         <Tab.Screen name="QuestionnairesTab" component={QuestionnairesStackNav} options={{ tabBarLabel: 'Анкеты' }} />
         <Tab.Screen name="SettingsTab" component={SettingsStackNav} options={{ tabBarLabel: 'Настройки' }} />
       </Tab.Navigator>

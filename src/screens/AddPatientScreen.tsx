@@ -11,7 +11,6 @@ import { AppButton } from '../components/AppButton';
 import { AppInput } from '../components/AppInput';
 import { Card } from '../components/Card';
 import { DatePickerField } from '../components/DatePickerField';
-import { TimePickerField } from '../components/TimePickerField';
 import { QuestionnaireSection } from '../components/QuestionnaireSection';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { QuestionnaireAnswerField } from '../components/QuestionnaireAnswerField';
@@ -25,7 +24,6 @@ import {
 interface DraftAppointment {
   tempId: string;
   date: string;
-  time?: string;
   description?: string;
 }
 interface DraftNote {
@@ -124,7 +122,6 @@ export function AddPatientScreen() {
         id: newId(),
         patientId: '',
         date: a.date,
-        time: a.time,
         description: a.description?.trim() || undefined,
         createdAt: ts,
         updatedAt: ts,
@@ -388,7 +385,6 @@ function DraftAppointmentEditor({
         <Ionicons name="close-circle" size={18} color={t.colors.danger} onPress={onRemove} />
       </View>
       <DatePickerField label="Дата" value={draft.date} onChange={d => onChange({ ...draft, date: d ?? draft.date })} allowClear={false} />
-      <TimePickerField label="Время" value={draft.time} onChange={time => onChange({ ...draft, time })} />
       <AppInput label="Описание" value={draft.description ?? ''} multiline onChangeText={text => onChange({ ...draft, description: text })} />
     </View>
   );

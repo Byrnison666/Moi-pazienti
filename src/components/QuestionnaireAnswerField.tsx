@@ -15,11 +15,9 @@ interface Props {
   readOnly?: boolean;
 }
 
-export function QuestionnaireAnswerField({ question, answer, onChange, readOnly }: Props) {
+function FieldWrapper({ question, children }: { question: QuestionnaireQuestion; children: React.ReactNode }) {
   const t = useTheme();
-  const value = answer?.value;
-
-  const Wrapper = ({ children }: { children: React.ReactNode }) => (
+  return (
     <View style={{ marginBottom: t.spacing(5) }}>
       <Text style={{ color: t.colors.text, fontSize: t.fontSize.md, fontWeight: '500', marginBottom: 8 }}>
         {question.title}
@@ -28,28 +26,32 @@ export function QuestionnaireAnswerField({ question, answer, onChange, readOnly 
       {children}
     </View>
   );
+}
+
+export function QuestionnaireAnswerField({ question, answer, onChange, readOnly }: Props) {
+  const value = answer?.value;
 
   if (readOnly) {
-    return <Wrapper><ReadOnlyAnswer question={question} value={value} /></Wrapper>;
+    return <FieldWrapper question={question}><ReadOnlyAnswer question={question} value={value} /></FieldWrapper>;
   }
 
   switch (question.type) {
     case 'short_text':
     case 'comment':
       return (
-        <Wrapper>
+        <FieldWrapper question={question}>
           <AppInput
             value={typeof value === 'string' ? value : ''}
             onChangeText={onChange}
             placeholder={question.placeholder ?? 'Введите ответ'}
             containerStyle={{ marginBottom: 0 }}
           />
-        </Wrapper>
+        </FieldWrapper>
       );
 
     case 'long_text':
       return (
-        <Wrapper>
+        <FieldWrapper question={question}>
           <AppInput
             value={typeof value === 'string' ? value : ''}
             onChangeText={onChange}
@@ -57,12 +59,12 @@ export function QuestionnaireAnswerField({ question, answer, onChange, readOnly 
             multiline
             containerStyle={{ marginBottom: 0 }}
           />
-        </Wrapper>
+        </FieldWrapper>
       );
 
     case 'number':
       return (
-        <Wrapper>
+        <FieldWrapper question={question}>
           <AppInput
             value={value != null ? String(value) : ''}
             onChangeText={text => {
@@ -74,18 +76,18 @@ export function QuestionnaireAnswerField({ question, answer, onChange, readOnly 
             keyboardType="numeric"
             containerStyle={{ marginBottom: 0 }}
           />
-        </Wrapper>
+        </FieldWrapper>
       );
 
     case 'yes_no': {
       const v: YesNoValue = (value === true) ? 'yes' : (value === false) ? 'no' : (value === null ? 'unspecified' : null);
       return (
-        <Wrapper>
+        <FieldWrapper question={question}>
           <YesNoToggle
             value={v}
             onChange={(nv) => onChange(nv === 'yes' ? true : nv === 'no' ? false : null)}
           />
-        </Wrapper>
+        </FieldWrapper>
       );
     }
 
@@ -94,7 +96,7 @@ export function QuestionnaireAnswerField({ question, answer, onChange, readOnly 
         ? value as { value: YesNoValue; comment?: string }
         : { value: null as YesNoValue, comment: '' };
       return (
-        <Wrapper>
+        <FieldWrapper question={question}>
           <YesNoToggle
             value={obj.value}
             onChange={(nv) => onChange({ value: nv, comment: obj.comment })}
@@ -107,52 +109,52 @@ export function QuestionnaireAnswerField({ question, answer, onChange, readOnly 
               containerStyle={{ marginBottom: 0 }}
             />
           </View>
-        </Wrapper>
+        </FieldWrapper>
       );
     }
 
     case 'scale_1_10':
       return (
-        <Wrapper>
+        <FieldWrapper question={question}>
           <RatingScale
             value={typeof value === 'number' ? value : null}
             onChange={onChange}
           />
-        </Wrapper>
+        </FieldWrapper>
       );
 
     case 'single_choice':
       return (
-        <Wrapper>
+        <FieldWrapper question={question}>
           <MultiSelectChips
             options={question.options ?? []}
             selected={typeof value === 'string' ? [value] : []}
             onChange={(arr) => onChange(arr[0] ?? '')}
             multi={false}
           />
-        </Wrapper>
+        </FieldWrapper>
       );
 
     case 'multi_choice':
       return (
-        <Wrapper>
+        <FieldWrapper question={question}>
           <MultiSelectChips
             options={question.options ?? []}
             selected={Array.isArray(value) ? value : []}
             onChange={onChange}
           />
-        </Wrapper>
+        </FieldWrapper>
       );
 
     case 'date':
       return (
-        <Wrapper>
+        <FieldWrapper question={question}>
           <DatePickerField
             value={typeof value === 'string' ? value : null}
             onChange={d => onChange(d ?? null)}
             placeholder="Выбрать дату"
           />
-        </Wrapper>
+        </FieldWrapper>
       );
 
     default:
