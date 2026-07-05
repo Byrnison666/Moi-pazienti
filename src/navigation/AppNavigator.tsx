@@ -42,17 +42,20 @@ const NotesStack = createNativeStackNavigator<NotesStackParamList>();
 const SettingsStack = createNativeStackNavigator<SettingsStackParamList>();
 const Tab = createBottomTabNavigator<RootTabParamList>();
 
-function PatientsStackNav() {
+// Общие опции стека. Native-header отключён — шапку рисует ScreenHeader
+// внутри каждого экрана (native-header v6 не отступает под статус-бар в
+// Android edge-to-edge SDK 54).
+function useStackScreenOptions() {
   const t = useTheme();
+  return {
+    headerShown: false,
+    contentStyle: { backgroundColor: t.colors.background },
+  };
+}
+
+function PatientsStackNav() {
   return (
-    <PatientsStack.Navigator
-      screenOptions={{
-        headerStyle: { backgroundColor: t.colors.background },
-        headerTintColor: t.colors.text,
-        headerTitleStyle: { fontWeight: '700' },
-        contentStyle: { backgroundColor: t.colors.background },
-      }}
-    >
+    <PatientsStack.Navigator screenOptions={useStackScreenOptions()}>
       <PatientsStack.Screen name="PatientsList" component={PatientsScreen} options={{ headerShown: false }} />
       <PatientsStack.Screen name="PatientDetail" component={PatientDetailScreen} options={{ title: 'Карточка пациента' }} />
       <PatientsStack.Screen name="EditPatient" component={EditPatientScreen} options={{ title: 'Редактирование' }} />
@@ -65,16 +68,8 @@ function PatientsStackNav() {
 }
 
 function ScheduleStackNav() {
-  const t = useTheme();
   return (
-    <ScheduleStack.Navigator
-      screenOptions={{
-        headerStyle: { backgroundColor: t.colors.background },
-        headerTintColor: t.colors.text,
-        headerTitleStyle: { fontWeight: '700' },
-        contentStyle: { backgroundColor: t.colors.background },
-      }}
-    >
+    <ScheduleStack.Navigator screenOptions={useStackScreenOptions()}>
       <ScheduleStack.Screen name="ScheduleList" component={ScheduleScreen} options={{ headerShown: false }} />
       <ScheduleStack.Screen name="PatientDetail" component={PatientDetailScreen as any} options={{ title: 'Карточка пациента' }} />
       <ScheduleStack.Screen name="AppointmentEdit" component={AppointmentEditScreen as any} options={{ title: 'Прием' }} />
@@ -84,15 +79,8 @@ function ScheduleStackNav() {
 }
 
 function AddPatientStackNav() {
-  const t = useTheme();
   return (
-    <AddPatientStack.Navigator
-      screenOptions={{
-        headerStyle: { backgroundColor: t.colors.background },
-        headerTintColor: t.colors.text,
-        contentStyle: { backgroundColor: t.colors.background },
-      }}
-    >
+    <AddPatientStack.Navigator screenOptions={useStackScreenOptions()}>
       <AddPatientStack.Screen name="AddPatient" component={AddPatientScreen} options={{ headerShown: false }} />
       <AddPatientStack.Screen name="PatientDetail" component={PatientDetailScreen as any} options={{ title: 'Карточка пациента' }} />
     </AddPatientStack.Navigator>
@@ -100,16 +88,8 @@ function AddPatientStackNav() {
 }
 
 function QuestionnairesStackNav() {
-  const t = useTheme();
   return (
-    <QuestionnairesStack.Navigator
-      screenOptions={{
-        headerStyle: { backgroundColor: t.colors.background },
-        headerTintColor: t.colors.text,
-        headerTitleStyle: { fontWeight: '700' },
-        contentStyle: { backgroundColor: t.colors.background },
-      }}
-    >
+    <QuestionnairesStack.Navigator screenOptions={useStackScreenOptions()}>
       <QuestionnairesStack.Screen name="QuestionnairesList" component={QuestionnairesScreen} options={{ headerShown: false }} />
       <QuestionnairesStack.Screen name="QuestionnaireEditor" component={QuestionnaireEditorScreen} options={{ title: 'Шаблон анкеты' }} />
     </QuestionnairesStack.Navigator>
@@ -117,16 +97,8 @@ function QuestionnairesStackNav() {
 }
 
 function NotesStackNav() {
-  const t = useTheme();
   return (
-    <NotesStack.Navigator
-      screenOptions={{
-        headerStyle: { backgroundColor: t.colors.background },
-        headerTintColor: t.colors.text,
-        headerTitleStyle: { fontWeight: '700' },
-        contentStyle: { backgroundColor: t.colors.background },
-      }}
-    >
+    <NotesStack.Navigator screenOptions={useStackScreenOptions()}>
       <NotesStack.Screen name="NotesList" component={NotesScreen} options={{ headerShown: false }} />
       <NotesStack.Screen name="JournalEntryEdit" component={JournalEntryEditScreen} options={{ title: 'Запись' }} />
     </NotesStack.Navigator>
@@ -134,15 +106,8 @@ function NotesStackNav() {
 }
 
 function SettingsStackNav() {
-  const t = useTheme();
   return (
-    <SettingsStack.Navigator
-      screenOptions={{
-        headerStyle: { backgroundColor: t.colors.background },
-        headerTintColor: t.colors.text,
-        contentStyle: { backgroundColor: t.colors.background },
-      }}
-    >
+    <SettingsStack.Navigator screenOptions={useStackScreenOptions()}>
       <SettingsStack.Screen name="SettingsHome" component={SettingsScreen} options={{ headerShown: false }} />
       <SettingsStack.Screen name="SyncSettings" component={SyncSettingsScreen} options={{ title: 'Синхронизация' }} />
     </SettingsStack.Navigator>

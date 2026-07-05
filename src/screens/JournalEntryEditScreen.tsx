@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useTheme } from '../context/ThemeContext';
+import { ScreenHeader } from '../components/ScreenHeader';
 import { useData } from '../context/DataContext';
 import { Card } from '../components/Card';
 import { AppInput } from '../components/AppInput';
@@ -55,6 +56,7 @@ export function JournalEntryEditScreen({ navigation, route }: Props) {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: t.colors.background }} edges={['bottom']}>
+      <ScreenHeader title="Запись" />
       <ScrollView contentContainerStyle={{ padding: t.spacing(4) }}>
         <Card>
           <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.sm, marginBottom: 8 }}>Тип записи</Text>

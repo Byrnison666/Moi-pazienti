@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../context/ThemeContext';
+import { ScreenHeader } from '../components/ScreenHeader';
 import { Card } from '../components/Card';
 import {
   SyncState,
@@ -115,6 +116,7 @@ export function SyncSettingsScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: t.colors.background }} edges={['bottom']}>
+      <ScreenHeader title="Синхронизация" />
       <ScrollView contentContainerStyle={{ padding: t.spacing(4), paddingBottom: 80 }} keyboardShouldPersistTaps="handled">
         <Card>
           <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.xs, fontWeight: '600', marginBottom: 4 }}>

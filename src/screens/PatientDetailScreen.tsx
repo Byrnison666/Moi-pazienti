@@ -5,6 +5,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../context/ThemeContext';
+import { ScreenHeader } from '../components/ScreenHeader';
 import { useData } from '../context/DataContext';
 import { Card } from '../components/Card';
 import { AppButton } from '../components/AppButton';
@@ -62,6 +63,7 @@ export function PatientDetailScreen({ navigation, route }: Props) {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: t.colors.background }} edges={['bottom']}>
+      <ScreenHeader title="Карточка пациента" />
       <ScrollView contentContainerStyle={{ padding: t.spacing(4), paddingBottom: 60 }}>
         <Card style={{ marginBottom: 16 }}>
           <View style={styles.headerRow}>

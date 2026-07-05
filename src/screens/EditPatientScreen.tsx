@@ -3,6 +3,7 @@ import { ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useTheme } from '../context/ThemeContext';
+import { ScreenHeader } from '../components/ScreenHeader';
 import { useData } from '../context/DataContext';
 import { AppInput } from '../components/AppInput';
 import { AppButton } from '../components/AppButton';
@@ -52,6 +53,7 @@ export function EditPatientScreen({ navigation, route }: Props) {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: t.colors.background }} edges={['bottom']}>
+      <ScreenHeader title="Редактирование" />
       <ScrollView contentContainerStyle={{ padding: t.spacing(4) }}>
         <Card>
           <AppInput

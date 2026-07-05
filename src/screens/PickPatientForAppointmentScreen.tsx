@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../context/ThemeContext';
+import { ScreenHeader } from '../components/ScreenHeader';
 import { useData } from '../context/DataContext';
 import { Card } from '../components/Card';
 import { EmptyState } from '../components/EmptyState';
@@ -23,6 +24,7 @@ export function PickPatientForAppointmentScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: t.colors.background }} edges={['bottom']}>
+      <ScreenHeader title="Выбор пациента" />
       <View style={{ padding: t.spacing(4) }}>
         <View style={[styles.searchBox, { backgroundColor: t.colors.surface, borderColor: t.colors.border, borderRadius: t.radius.md }]}>
           <Ionicons name="search" size={18} color={t.colors.textMuted} />
