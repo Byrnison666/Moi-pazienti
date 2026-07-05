@@ -107,6 +107,22 @@ export async function disableSync(): Promise<void> {
   listeners.forEach(l => l(state));
 }
 
+// Проверка кред без сохранения: 'ok' — авторизация прошла (файл есть или ещё нет),
+// 'auth' — неверный логин/пароль, 'network' — нет связи/ошибка сервера.
+export async function testConnection(login: string, appPassword: string): Promise<'ok' | 'auth' | 'network'> {
+  if (!login.trim() || !appPassword) return 'auth';
+  const header = 'Basic ' + base64(`${login.trim()}:${appPassword}`);
+  let res: Response;
+  try {
+    res = await webdav('GET', REMOTE_FILE, header);
+  } catch {
+    return 'network';
+  }
+  if (res.status === 401) return 'auth';
+  if (res.ok || res.status === 404) return 'ok';
+  return 'network';
+}
+
 export async function syncNow(): Promise<void> {
   const auth = await authHeader();
   if (!auth) {

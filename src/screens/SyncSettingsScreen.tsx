@@ -19,6 +19,7 @@ import {
   saveSyncConfig,
   subscribeSync,
   syncNow,
+  testConnection,
 } from '../sync/syncManager';
 
 export function SyncSettingsScreen() {
@@ -50,6 +51,22 @@ export function SyncSettingsScreen() {
       Alert.alert('Готово', 'Синхронизация включена.');
     } catch (e) {
       Alert.alert('Ошибка', 'Не удалось сохранить настройки.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const onTest = async () => {
+    if (!login.trim() || !password) {
+      Alert.alert('Проверьте данные', 'Укажите логин и пароль приложения Яндекс.');
+      return;
+    }
+    setBusy(true);
+    try {
+      const r = await testConnection(login, password);
+      if (r === 'ok') Alert.alert('Успешно', 'Подключение к Яндекс.Диску работает.');
+      else if (r === 'auth') Alert.alert('Ошибка авторизации', 'Неверный логин или пароль приложения.');
+      else Alert.alert('Нет связи', 'Не удалось подключиться к Яндекс.Диску. Проверьте интернет.');
     } finally {
       setBusy(false);
     }
@@ -121,17 +138,18 @@ export function SyncSettingsScreen() {
             ЯНДЕКС.ДИСК (WebDAV)
           </Text>
           <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.sm, marginBottom: 8 }}>
-            Данные хранятся в папке «MoiPacienty» на вашем Яндекс.Диске. Нужен пароль приложения (не пароль от аккаунта).
+            Данные хранятся в папке «dental-patients» на вашем Яндекс.Диске. Нужен пароль приложения (не пароль от аккаунта).
           </Text>
 
-          <Text style={{ color: t.colors.text, fontSize: t.fontSize.sm, fontWeight: '600', marginTop: 8 }}>Логин</Text>
+          <Text style={{ color: t.colors.text, fontSize: t.fontSize.sm, fontWeight: '600', marginTop: 8 }}>Логин Яндекс</Text>
           <TextInput
             value={login}
             onChangeText={setLogin}
-            placeholder="имя_пользователя"
+            placeholder="user@yandex.ru или user@домен"
             placeholderTextColor={t.colors.textMuted}
             autoCapitalize="none"
             autoCorrect={false}
+            keyboardType="email-address"
             style={inputStyle}
           />
 
@@ -149,6 +167,8 @@ export function SyncSettingsScreen() {
             style={inputStyle}
           />
 
+          <View style={{ height: 12 }} />
+          <PrimaryButton label="Проверить подключение" onPress={onTest} disabled={busy} variant="soft" />
           <PrimaryButton
             label={enabled ? 'Сохранить и обновить' : 'Включить синхронизацию'}
             onPress={onSave}
