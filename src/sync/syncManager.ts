@@ -14,7 +14,7 @@ export interface SyncState {
 }
 
 const WEBDAV_BASE = 'https://webdav.yandex.ru';
-const REMOTE_DIR = '/MoiPacienty';
+const REMOTE_DIR = '/dental-patients';
 const REMOTE_FILE = `${REMOTE_DIR}/data.json`;
 const TIMEOUT_MS = 15000;
 const PUSH_DEBOUNCE_MS = 2500;
@@ -170,12 +170,25 @@ async function pull(local: AppData): Promise<void> {
     return;
   }
 
-  // Защита: непустой локальный не затираем пустым удалённым снапшотом.
-  if (isEmpty(remote) && !isEmpty(local)) {
+  // Demo-aware защита слияния. "Реальные данные" = что-то помимо демо/пустого.
+  // Иначе свежий updatedAt локальной демки затёр бы реальную облачную базу
+  // (и наоборот) при первом запуске.
+  const remoteReal = hasRealData(remote);
+  const localReal = hasRealData(local);
+
+  if (remoteReal && !localReal) {
+    // Облако — реальная база, локально только демо/пусто: принимаем облако.
+    onRemoteSnapshot?.(remote);
+    setState('idle', new Date().toISOString());
+    return;
+  }
+  if (localReal && !remoteReal) {
+    // Локально реальные данные, облако демо/пусто: заливаем локальные.
     await doPush(local, auth);
     return;
   }
 
+  // Обе стороны реальные (или обе демо/пустые) — обычный LWW по updatedAt.
   const remoteAt = remote.updatedAt ?? '';
   const localAt = local.updatedAt ?? '';
   if (remoteAt > localAt) {
@@ -248,12 +261,14 @@ async function webdav(
   }
 }
 
-function isEmpty(d: AppData): boolean {
-  return (
-    (d.patients?.length ?? 0) === 0 &&
-    (d.templates?.length ?? 0) === 0 &&
-    (d.journal?.length ?? 0) === 0
-  );
+// Есть ли в снапшоте пользовательский контент помимо демо-данных.
+function hasRealData(d: AppData): boolean {
+  const demoPatients = new Set(d.demoIds?.patients ?? []);
+  const demoTemplates = new Set(d.demoIds?.templates ?? []);
+  const realPatients = (d.patients ?? []).some(p => !demoPatients.has(p.id));
+  const realTemplates = (d.templates ?? []).some(t => !demoTemplates.has(t.id));
+  const realJournal = (d.journal ?? []).length > 0;
+  return realPatients || realTemplates || realJournal;
 }
 
 const B64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
