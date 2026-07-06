@@ -3,7 +3,7 @@ import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as DocumentPicker from 'expo-document-picker';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../context/ThemeContext';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { useData } from '../context/DataContext';
@@ -17,6 +17,7 @@ import { FileCard } from '../components/FileCard';
 import { PatientQuestionnaireCard } from '../components/PatientQuestionnaireCard';
 import { ageText, calcAge, compareDates, formatDateLong } from '../utils/date';
 import { PatientsStackParamList } from '../navigation/types';
+import { getDetailBottomPadding } from '../navigation/tabBarMetrics';
 
 type Props = NativeStackScreenProps<PatientsStackParamList, 'PatientDetail'>;
 
@@ -25,6 +26,7 @@ export function PatientDetailScreen({ navigation, route }: Props) {
   const { data, deletePatient, addFile, deleteFile, deleteAppointment, deleteNote, deletePatientQuestionnaire } = useData();
   const patient = data.patients.find(p => p.id === route.params.patientId);
 
+  const insets = useSafeAreaInsets();
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [confirmNoteId, setConfirmNoteId] = useState<string | null>(null);
   const [confirmApptId, setConfirmApptId] = useState<string | null>(null);
@@ -64,7 +66,7 @@ export function PatientDetailScreen({ navigation, route }: Props) {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: t.colors.background }} edges={['bottom']}>
       <ScreenHeader title="Карточка пациента" />
-      <ScrollView contentContainerStyle={{ padding: t.spacing(4), paddingBottom: 60 }}>
+      <ScrollView contentContainerStyle={{ padding: t.spacing(4), paddingBottom: getDetailBottomPadding(insets.bottom) }}>
         <Card style={{ marginBottom: 16 }}>
           <View style={styles.headerRow}>
             <View style={[styles.avatar, { backgroundColor: t.colors.primarySoft }]}>

@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Pressable, SectionList, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CommonActions, useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
@@ -9,6 +9,7 @@ import { AppointmentCard } from '../components/AppointmentCard';
 import { EmptyState } from '../components/EmptyState';
 import { AppButton } from '../components/AppButton';
 import { compareDates, isFutureDate } from '../utils/date';
+import { getFloatingActionBottom, getListBottomPadding } from '../navigation/tabBarMetrics';
 import { Appointment } from '../types';
 
 interface Row { appointment: Appointment; patientId: string; patientName: string }
@@ -18,6 +19,7 @@ export function ScheduleScreen() {
   const { data } = useData();
   const navigation = useNavigation<any>();
   const [tab, setTab] = useState<'upcoming' | 'past'>('upcoming');
+  const insets = useSafeAreaInsets();
 
   const all: Row[] = useMemo(() => {
     return data.patients.flatMap(p => p.appointments.map(a => ({
@@ -78,7 +80,7 @@ export function ScheduleScreen() {
         <SectionList
           sections={grouped}
           keyExtractor={r => r.appointment.id}
-          contentContainerStyle={{ padding: t.spacing(4), paddingBottom: 90 }}
+          contentContainerStyle={{ padding: t.spacing(4), paddingBottom: getListBottomPadding(insets.bottom) }}
           renderSectionHeader={({ section }) => <DateHeader iso={section.title} />}
           renderItem={({ item }) => (
             <AppointmentCard
@@ -91,8 +93,8 @@ export function ScheduleScreen() {
         />
       )}
 
-      {tab === 'upcoming' && data.patients.length > 0 ? (
-        <View style={{ position: 'absolute', bottom: t.spacing(5) + 60, right: t.spacing(4) }}>
+      {tab === 'upcoming' && data.patients.length > 0 && grouped.length > 0 ? (
+        <View style={{ position: 'absolute', bottom: getFloatingActionBottom(insets.bottom), right: t.spacing(4) }}>
           <AppButton title="Добавить" icon="add" onPress={goAdd} />
         </View>
       ) : null}

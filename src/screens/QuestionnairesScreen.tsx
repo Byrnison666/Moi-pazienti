@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useTheme } from '../context/ThemeContext';
 import { useData } from '../context/DataContext';
@@ -9,6 +9,7 @@ import { EmptyState } from '../components/EmptyState';
 import { AppButton } from '../components/AppButton';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { QuestionnairesStackParamList } from '../navigation/types';
+import { getFloatingActionBottom, getListBottomPadding } from '../navigation/tabBarMetrics';
 
 type Props = NativeStackScreenProps<QuestionnairesStackParamList, 'QuestionnairesList'>;
 
@@ -16,6 +17,7 @@ export function QuestionnairesScreen({ navigation }: Props) {
   const t = useTheme();
   const { data, deleteTemplate } = useData();
   const [confirmId, setConfirmId] = useState<string | null>(null);
+  const insets = useSafeAreaInsets();
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: t.colors.background }} edges={['top']}>
@@ -38,7 +40,7 @@ export function QuestionnairesScreen({ navigation }: Props) {
         <FlatList
           data={data.templates}
           keyExtractor={tpl => tpl.id}
-          contentContainerStyle={{ padding: t.spacing(4), paddingBottom: 90 }}
+          contentContainerStyle={{ padding: t.spacing(4), paddingBottom: getListBottomPadding(insets.bottom) }}
           renderItem={({ item }) => (
             <QuestionnaireTemplateCard
               template={item}
@@ -50,9 +52,11 @@ export function QuestionnairesScreen({ navigation }: Props) {
         />
       )}
 
-      <View style={[styles.fab, { bottom: t.spacing(5) + 60, right: t.spacing(4) }]}>
-        <AppButton title="Создать" icon="add" onPress={() => navigation.navigate('QuestionnaireEditor', {})} />
-      </View>
+      {data.templates.length > 0 ? (
+        <View style={[styles.fab, { bottom: getFloatingActionBottom(insets.bottom), right: t.spacing(4) }]}>
+          <AppButton title="Создать" icon="add" onPress={() => navigation.navigate('QuestionnaireEditor', {})} />
+        </View>
+      ) : null}
 
       <ConfirmDialog
         visible={!!confirmId}

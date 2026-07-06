@@ -33,6 +33,7 @@ import { JournalEntryEditScreen } from '../screens/JournalEntryEditScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { SyncSettingsScreen } from '../screens/SyncSettingsScreen';
 import { SyncStatusOverlay } from '../components/SyncStatusOverlay';
+import { TAB_BAR_BASE_HEIGHT } from './tabBarMetrics';
 
 const PatientsStack = createNativeStackNavigator<PatientsStackParamList>();
 const ScheduleStack = createNativeStackNavigator<ScheduleStackParamList>();
@@ -132,7 +133,7 @@ export function AppNavigator() {
           tabBarStyle: {
             backgroundColor: t.colors.surface,
             borderTopColor: t.colors.border,
-            height: 64 + insets.bottom,
+            height: TAB_BAR_BASE_HEIGHT + insets.bottom,
             paddingBottom: 8 + insets.bottom,
             paddingTop: 6,
           },

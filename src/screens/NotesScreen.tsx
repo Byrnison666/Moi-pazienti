@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../context/ThemeContext';
 import { useData } from '../context/DataContext';
@@ -10,6 +10,7 @@ import { EmptyState } from '../components/EmptyState';
 import { AppButton } from '../components/AppButton';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { JournalEntry, JournalKind } from '../types';
+import { getFloatingActionBottom, getListBottomPadding } from '../navigation/tabBarMetrics';
 
 type Filter = 'all' | JournalKind;
 
@@ -26,6 +27,7 @@ export function NotesScreen() {
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<Filter>('all');
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const insets = useSafeAreaInsets();
 
   const sorted = useMemo(() => {
     return [...data.journal].sort((a, b) => {
@@ -93,7 +95,7 @@ export function NotesScreen() {
           subtitle={
             query || filter !== 'all'
               ? 'Попробуйте сменить фильтр или запрос'
-              : 'Запишите свои хотелки, цели или просто мысли. Нажмите «Добавить» внизу.'
+              : 'Запишите свои хотелки, цели или просто мысли. Нажмите «Добавить запись».'
           }
           actionTitle={query || filter !== 'all' ? undefined : 'Добавить запись'}
           onAction={query || filter !== 'all' ? undefined : () => nav.navigate('JournalEntryEdit', {})}
@@ -102,7 +104,7 @@ export function NotesScreen() {
         <FlatList
           data={filtered}
           keyExtractor={e => e.id}
-          contentContainerStyle={{ padding: t.spacing(4), paddingTop: t.spacing(3), paddingBottom: 140 }}
+          contentContainerStyle={{ padding: t.spacing(4), paddingTop: t.spacing(3), paddingBottom: getListBottomPadding(insets.bottom) }}
           renderItem={({ item }) => (
             <EntryCard
               entry={item}
@@ -118,9 +120,11 @@ export function NotesScreen() {
         />
       )}
 
-      <View style={{ position: 'absolute', bottom: t.spacing(5) + 60, right: t.spacing(4) }}>
-        <AppButton title="Добавить" icon="add" onPress={() => nav.navigate('JournalEntryEdit', {})} />
-      </View>
+      {!(query.trim() === '' && filter === 'all' && data.journal.length === 0) ? (
+        <View style={{ position: 'absolute', bottom: getFloatingActionBottom(insets.bottom), right: t.spacing(4) }}>
+          <AppButton title="Добавить" icon="add" onPress={() => nav.navigate('JournalEntryEdit', {})} />
+        </View>
+      ) : null}
 
       <ConfirmDialog
         visible={!!confirmDeleteId}

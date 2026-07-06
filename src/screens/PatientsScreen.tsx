@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useTheme } from '../context/ThemeContext';
 import { useData } from '../context/DataContext';
@@ -9,6 +9,7 @@ import { PatientCard } from '../components/PatientCard';
 import { EmptyState } from '../components/EmptyState';
 import { AppButton } from '../components/AppButton';
 import { PatientsStackParamList } from '../navigation/types';
+import { getFloatingActionBottom, getListBottomPadding } from '../navigation/tabBarMetrics';
 import { useNavigation } from '@react-navigation/native';
 import { CommonActions } from '@react-navigation/native';
 
@@ -19,6 +20,7 @@ export function PatientsScreen({ navigation }: Props) {
   const { data, ready } = useData();
   const [query, setQuery] = useState('');
   const root = useNavigation();
+  const insets = useSafeAreaInsets();
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -32,6 +34,9 @@ export function PatientsScreen({ navigation }: Props) {
       CommonActions.navigate({ name: 'AddPatientTab' as never })
     );
   };
+
+  const hasQuery = query.trim().length > 0;
+  const showFab = ready && !(data.patients.length === 0 && !hasQuery);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: t.colors.background }} edges={['top']}>
@@ -68,16 +73,18 @@ export function PatientsScreen({ navigation }: Props) {
         <FlatList
           data={filtered}
           keyExtractor={p => p.id}
-          contentContainerStyle={{ padding: t.spacing(4), paddingTop: 0, paddingBottom: 90 }}
+          contentContainerStyle={{ padding: t.spacing(4), paddingTop: 0, paddingBottom: getListBottomPadding(insets.bottom) }}
           renderItem={({ item }) => (
             <PatientCard patient={item} onPress={() => navigation.navigate('PatientDetail', { patientId: item.id })} />
           )}
         />
       )}
 
-      <View style={[styles.fab, { bottom: t.spacing(5) + 60, right: t.spacing(4) }]}>
-        <AppButton title="Добавить" icon="add" onPress={goToAdd} />
-      </View>
+      {showFab ? (
+        <View style={[styles.fab, { bottom: getFloatingActionBottom(insets.bottom), right: t.spacing(4) }]}>
+          <AppButton title="Добавить" icon="add" onPress={goToAdd} />
+        </View>
+      ) : null}
     </SafeAreaView>
   );
 }
