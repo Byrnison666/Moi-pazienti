@@ -3,7 +3,7 @@
 Android-приложение для врача-стоматолога: учёт пациентов, приёмов, заметок. **React Native + Expo SDK 54 + TypeScript.**
 
 - Git: `origin` = `Byrnison666/Moi-pazienti`, ветка **main**. Есть `old-origin` (старый репо) — не пушить туда.
-- Версия: `package.json` / `app.json` = **1.3.0**. Клон на Linux: `~/it/dental-patients` (раньше жил на Windows).
+- Версия: `package.json` / `app.json` = **1.3.1**. Клон на Linux: `~/it/dental-patients` (раньше жил на Windows).
 - Идентичность git настроена локально в репо (`Byrnison666` / `isolvecoagula@gmail.com`), глобальной на машине нет.
 
 ## Запуск и проверка

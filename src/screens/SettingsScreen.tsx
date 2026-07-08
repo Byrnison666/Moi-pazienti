@@ -25,7 +25,7 @@ export function SettingsScreen() {
             ПРИЛОЖЕНИЕ
           </Text>
           <InfoRow label="Название" value="Мои пациенты" />
-          <InfoRow label="Версия" value="1.3.0" />
+          <InfoRow label="Версия" value="1.3.1" />
         </Card>
 
         <Pressable onPress={() => nav.navigate('SyncSettings')}>
