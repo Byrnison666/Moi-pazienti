@@ -24,15 +24,15 @@ export function ScreenHeader({ title, onBack, right }: Props) {
 
   return (
     <SafeAreaView edges={['top']} style={{ backgroundColor: t.colors.background }}>
-      <View style={[styles.row, { borderBottomColor: t.colors.border }]}>
+      <View style={styles.row}>
         {showBack ? (
           <Pressable onPress={handleBack} hitSlop={12} style={styles.side}>
-            <Ionicons name="chevron-back" size={26} color={t.colors.text} />
+            <Ionicons name="chevron-back" size={24} color={t.colors.text} />
           </Pressable>
         ) : (
           <View style={styles.side} />
         )}
-        <Text numberOfLines={1} style={[styles.title, { color: t.colors.text }]}>
+        <Text numberOfLines={1} style={[styles.title, { color: t.colors.text, fontFamily: t.font.extrabold }]}>
           {title}
         </Text>
         <View style={[styles.side, styles.right]}>{right}</View>
@@ -45,11 +45,11 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    height: 52,
+    height: 56,
     paddingHorizontal: 8,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    paddingTop: 4,
   },
   side: { width: 44, justifyContent: 'center' },
   right: { alignItems: 'flex-end' },
-  title: { flex: 1, fontSize: 18, fontWeight: '700' },
+  title: { flex: 1, fontSize: 18 },
 });

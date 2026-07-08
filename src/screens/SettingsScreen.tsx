@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme, useThemeControls } from '../context/ThemeContext';
 import { Card } from '../components/Card';
+import { ScreenHeader } from '../components/ScreenHeader';
 import { ThemeMode } from '../types';
 import { SyncState, subscribeSync } from '../sync/syncManager';
 
@@ -17,44 +18,44 @@ export function SettingsScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: t.colors.background }} edges={['top']}>
+      <ScreenHeader title="Настройки" />
       <ScrollView contentContainerStyle={{ padding: t.spacing(4), paddingBottom: 80 }}>
-        <Text style={{ color: t.colors.text, fontSize: t.fontSize.xxl, fontWeight: '700' }}>Настройки</Text>
-
-        <Card style={{ marginTop: 16 }}>
-          <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.xs, fontWeight: '600', marginBottom: 8 }}>
+        <Card style={{ marginTop: 4 }}>
+          <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.xs, fontFamily: t.font.extrabold, marginBottom: 8, letterSpacing: 1 }}>
             ПРИЛОЖЕНИЕ
           </Text>
           <InfoRow label="Название" value="Мои пациенты" />
-          <InfoRow label="Версия" value="1.2.2" />
+          <InfoRow label="Версия" value="1.3.0" />
         </Card>
 
         <Pressable onPress={() => nav.navigate('SyncSettings')}>
-          <Card style={{ marginTop: 16 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-              <View style={{ flex: 1 }}>
-                <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.xs, fontWeight: '600', marginBottom: 4 }}>
-                  СИНХРОНИЗАЦИЯ
-                </Text>
-                <Text style={{ color: t.colors.text, fontSize: t.fontSize.md, fontWeight: '600' }}>
-                  Яндекс.Диск (WebDAV)
-                </Text>
-                <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.sm, marginTop: 4 }}>
-                  {syncSubtitle(sync)}
-                </Text>
-              </View>
-              <Ionicons name="chevron-forward" size={20} color={t.colors.textMuted} />
+          <Card style={{ marginTop: 16, flexDirection: 'row', alignItems: 'center' }}>
+            <View style={[styles.syncIcon, { backgroundColor: t.colors.primarySoft, borderRadius: t.radius.md }]}>
+              <Ionicons name="cloud-outline" size={21} color={t.colors.primary} />
             </View>
+            <View style={{ flex: 1 }}>
+              <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.xs, fontFamily: t.font.extrabold, letterSpacing: 1 }}>
+                СИНХРОНИЗАЦИЯ
+              </Text>
+              <Text style={{ color: t.colors.text, fontSize: t.fontSize.md, fontFamily: t.font.extrabold, marginTop: 3 }}>
+                Яндекс.Диск (WebDAV)
+              </Text>
+              <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.sm, fontFamily: t.font.medium, marginTop: 2 }}>
+                {syncSubtitle(sync)}
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={18} color={t.colors.textMuted} />
           </Card>
         </Pressable>
 
         <Card style={{ marginTop: 16 }}>
-          <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.xs, fontWeight: '600', marginBottom: 12 }}>
+          <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.xs, fontFamily: t.font.extrabold, marginBottom: 12, letterSpacing: 1 }}>
             ОФОРМЛЕНИЕ
           </Text>
-          <View style={styles.themeRow}>
-            <ThemeOption mode="system" current={mode} onPress={setMode} label="Системная" icon="phone-portrait-outline" />
+          <View style={[styles.themeRow, { backgroundColor: t.colors.surfaceAlt, borderRadius: t.radius.md }]}>
             <ThemeOption mode="light" current={mode} onPress={setMode} label="Светлая" icon="sunny-outline" />
             <ThemeOption mode="dark" current={mode} onPress={setMode} label="Тёмная" icon="moon-outline" />
+            <ThemeOption mode="system" current={mode} onPress={setMode} label="Система" icon="phone-portrait-outline" />
           </View>
         </Card>
       </ScrollView>
@@ -76,8 +77,8 @@ function InfoRow({ label, value }: { label: string; value: string }) {
   const t = useTheme();
   return (
     <View style={styles.infoRow}>
-      <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.sm }}>{label}</Text>
-      <Text style={{ color: t.colors.text, fontSize: t.fontSize.sm, fontWeight: '500' }}>{value}</Text>
+      <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.sm, fontFamily: t.font.medium }}>{label}</Text>
+      <Text style={{ color: t.colors.text, fontSize: t.fontSize.sm, fontFamily: t.font.bold }}>{value}</Text>
     </View>
   );
 }
@@ -96,15 +97,16 @@ function ThemeOption({
       style={[
         styles.themeBtn,
         {
-          backgroundColor: active ? t.colors.primary : t.colors.surfaceAlt,
-          borderRadius: t.radius.md,
+          backgroundColor: active ? t.colors.surface : 'transparent',
+          borderRadius: t.radius.sm,
+          margin: 4,
         },
       ]}
     >
-      <Ionicons name={icon} size={18} color={active ? t.colors.textInverse : t.colors.text} />
+      <Ionicons name={icon} size={18} color={active ? t.colors.accentStrong : t.colors.text} />
       <Text style={{
-        color: active ? t.colors.textInverse : t.colors.text,
-        fontWeight: '600', fontSize: t.fontSize.sm, marginTop: 4,
+        color: active ? t.colors.accentStrong : t.colors.text,
+        fontFamily: t.font.bold, fontSize: t.fontSize.sm, marginTop: 4,
       }}>{label}</Text>
     </Pressable>
   );
@@ -112,6 +114,7 @@ function ThemeOption({
 
 const styles = StyleSheet.create({
   infoRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 6 },
-  themeRow: { flexDirection: 'row', gap: 8 },
-  themeBtn: { flex: 1, alignItems: 'center', paddingVertical: 14 },
+  syncIcon: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center', marginRight: 14 },
+  themeRow: { flexDirection: 'row', padding: 1 },
+  themeBtn: { flex: 1, alignItems: 'center', paddingVertical: 10 },
 });

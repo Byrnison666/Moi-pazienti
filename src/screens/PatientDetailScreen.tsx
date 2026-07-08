@@ -70,18 +70,18 @@ export function PatientDetailScreen({ navigation, route }: Props) {
         <Card style={{ marginBottom: 16 }}>
           <View style={styles.headerRow}>
             <View style={[styles.avatar, { backgroundColor: t.colors.primarySoft }]}>
-              <Text style={{ color: t.colors.primary, fontSize: 22, fontWeight: '700' }}>
+              <Text style={{ color: t.colors.primary, fontSize: 22, fontFamily: t.font.extrabold }}>
                 {patient.fullName.split(/\s+/).slice(0, 2).map(s => s[0]?.toUpperCase()).join('')}
               </Text>
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={{ color: t.colors.text, fontSize: t.fontSize.xl, fontWeight: '700' }}>{patient.fullName}</Text>
+              <Text style={{ color: t.colors.text, fontSize: t.fontSize.xl, fontFamily: t.font.extrabold }}>{patient.fullName}</Text>
               {patient.birthDate ? (
-                <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.sm, marginTop: 4 }}>
+                <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.sm, fontFamily: t.font.medium, marginTop: 4 }}>
                   {formatDateLong(patient.birthDate)}{age != null ? ` • ${ageText(age)}` : ''}
                 </Text>
               ) : age != null ? (
-                <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.sm, marginTop: 4 }}>{ageText(age)}</Text>
+                <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.sm, fontFamily: t.font.medium, marginTop: 4 }}>{ageText(age)}</Text>
               ) : null}
             </View>
           </View>
@@ -226,11 +226,11 @@ function SectionHeader({ icon, title, count, action }: {
   return (
     <View style={[styles.sectionHeader, { marginTop: 24, marginBottom: 10 }]}>
       <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-        <Ionicons name={icon} size={18} color={t.colors.primary} />
-        <Text style={{ color: t.colors.text, fontSize: t.fontSize.lg, fontWeight: '700', marginLeft: 8 }}>{title}</Text>
+        <Ionicons name={icon} size={18} color={t.colors.accentStrong} />
+        <Text style={{ color: t.colors.text, fontSize: t.fontSize.lg, fontFamily: t.font.extrabold, marginLeft: 8 }}>{title}</Text>
         {count > 0 ? (
-          <View style={{ backgroundColor: t.colors.primarySoft, paddingHorizontal: 8, borderRadius: 10, marginLeft: 8 }}>
-            <Text style={{ color: t.colors.primary, fontSize: t.fontSize.xs, fontWeight: '600' }}>{count}</Text>
+          <View style={{ backgroundColor: t.colors.accentSoft, paddingHorizontal: 8, borderRadius: 10, marginLeft: 8 }}>
+            <Text style={{ color: t.colors.accentStrong, fontSize: t.fontSize.xs, fontFamily: t.font.extrabold }}>{count}</Text>
           </View>
         ) : null}
       </View>

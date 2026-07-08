@@ -27,28 +27,28 @@ export function PatientCard({ patient, onPress }: Props) {
     <Card onPress={onPress} style={{ marginBottom: 12 }}>
       <View style={styles.row}>
         <View style={[styles.avatar, { backgroundColor: t.colors.primarySoft }]}>
-          <Text style={{ color: t.colors.primary, fontSize: 18, fontWeight: '700' }}>{initials || '?'}</Text>
+          <Text style={{ color: t.colors.primary, fontSize: 18, fontFamily: t.font.extrabold }}>{initials || '?'}</Text>
         </View>
         <View style={{ flex: 1 }}>
-          <Text style={{ color: t.colors.text, fontSize: t.fontSize.md, fontWeight: '600' }} numberOfLines={1}>
+          <Text style={{ color: t.colors.text, fontSize: t.fontSize.md, fontFamily: t.font.extrabold }} numberOfLines={1}>
             {patient.fullName}
           </Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 4 }}>
             {patient.birthDate ? (
-              <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.sm }}>
+              <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.sm, fontFamily: t.font.medium }}>
                 {formatDate(patient.birthDate)}
               </Text>
             ) : null}
             {age != null ? (
-              <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.sm }}>
+              <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.sm, fontFamily: t.font.medium }}>
                 {patient.birthDate ? ' • ' : ''}{ageText(age)}
               </Text>
             ) : null}
           </View>
           {upcoming ? (
-            <View style={[styles.upcoming, { backgroundColor: t.colors.primarySoft, borderRadius: t.radius.sm }]}>
-              <Ionicons name="calendar" size={13} color={t.colors.primary} />
-              <Text style={{ color: t.colors.primary, fontSize: t.fontSize.xs, marginLeft: 4, fontWeight: '600' }}>
+            <View style={[styles.upcoming, { backgroundColor: t.colors.accentSoft, borderRadius: t.radius.sm }]}>
+              <Ionicons name="calendar" size={13} color={t.colors.accentStrong} />
+              <Text style={{ color: t.colors.accentStrong, fontSize: t.fontSize.xs, marginLeft: 4, fontFamily: t.font.bold }}>
                 {formatRelativeDate(upcoming.date)}{upcoming.time ? ` • ${upcoming.time}` : ''}
               </Text>
             </View>

@@ -16,12 +16,12 @@ export function EmptyState({ icon = 'documents-outline', title, subtitle, action
   const t = useTheme();
   return (
     <View style={[styles.wrap, { padding: t.spacing(8) }]}>
-      <View style={[styles.iconBox, { backgroundColor: t.colors.primarySoft, borderRadius: t.radius.xl }]}>
-        <Ionicons name={icon} size={36} color={t.colors.primary} />
+      <View style={[styles.iconBox, { backgroundColor: t.colors.accentSoft, borderRadius: t.radius.xl }]}>
+        <Ionicons name={icon} size={36} color={t.colors.accentStrong} />
       </View>
-      <Text style={{ color: t.colors.text, fontSize: t.fontSize.lg, fontWeight: '600', marginTop: 12, textAlign: 'center' }}>{title}</Text>
+      <Text style={{ color: t.colors.text, fontSize: t.fontSize.lg, fontFamily: t.font.extrabold, marginTop: 12, textAlign: 'center' }}>{title}</Text>
       {subtitle ? (
-        <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.sm, marginTop: 6, textAlign: 'center', lineHeight: 20 }}>{subtitle}</Text>
+        <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.sm, fontFamily: t.font.medium, marginTop: 6, textAlign: 'center', lineHeight: 20 }}>{subtitle}</Text>
       ) : null}
       {actionTitle && onAction ? (
         <View style={{ marginTop: 16 }}>

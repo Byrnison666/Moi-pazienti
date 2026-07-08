@@ -43,5 +43,9 @@ export type RootTabParamList = {
   AddPatientTab: NavigatorScreenParams<AddPatientStackParamList>;
   NotesTab: NavigatorScreenParams<NotesStackParamList>;
   QuestionnairesTab: NavigatorScreenParams<QuestionnairesStackParamList>;
-  SettingsTab: NavigatorScreenParams<SettingsStackParamList>;
+};
+
+export type RootStackParamList = {
+  MainTabs: NavigatorScreenParams<RootTabParamList>;
+  Settings: NavigatorScreenParams<SettingsStackParamList>;
 };

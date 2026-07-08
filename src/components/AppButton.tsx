@@ -27,13 +27,13 @@ export function AppButton({
   const bg =
     variant === 'primary' ? t.colors.primary :
     variant === 'secondary' ? t.colors.primarySoft :
-    variant === 'danger' ? t.colors.danger :
+    variant === 'danger' ? t.colors.dangerSoft :
     'transparent';
 
   const fg =
     variant === 'primary' ? t.colors.textInverse :
     variant === 'secondary' ? t.colors.primary :
-    variant === 'danger' ? '#FFFFFF' :
+    variant === 'danger' ? t.colors.danger :
     t.colors.primary;
 
   const padV = size === 'sm' ? 8 : size === 'lg' ? 16 : 12;
@@ -65,7 +65,7 @@ export function AppButton({
         ) : (
           <>
             {icon && <Ionicons name={icon} size={fz + 2} color={fg} style={{ marginRight: 6 }} />}
-            <Text style={{ color: fg, fontSize: fz, fontWeight: '600' }}>{title}</Text>
+            <Text style={{ color: fg, fontSize: fz, fontFamily: t.font.bold }}>{title}</Text>
           </>
         )}
       </View>

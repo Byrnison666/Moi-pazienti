@@ -8,6 +8,7 @@ import { useData } from '../context/DataContext';
 import { Card } from '../components/Card';
 import { EmptyState } from '../components/EmptyState';
 import { AppButton } from '../components/AppButton';
+import { ListScreenHeader } from '../components/ListScreenHeader';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { JournalEntry, JournalKind } from '../types';
 import { getFloatingActionBottom, getListBottomPadding } from '../navigation/tabBarMetrics';
@@ -57,16 +58,11 @@ export function NotesScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: t.colors.background }} edges={['top']}>
-      <View style={{ paddingHorizontal: t.spacing(4), paddingTop: t.spacing(2) }}>
-        <Text style={{ color: t.colors.text, fontSize: t.fontSize.xxl, fontWeight: '700' }}>Заметки</Text>
-        <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.sm, marginTop: 2 }}>
-          Личные заметки, желания и цели
-        </Text>
-      </View>
+      <ListScreenHeader title="Заметки" subtitle="Личные заметки, желания и цели" />
 
       <View style={[styles.searchBox, {
         backgroundColor: t.colors.surface, borderColor: t.colors.border, borderRadius: t.radius.md,
-        marginHorizontal: t.spacing(4), marginTop: t.spacing(3),
+        marginHorizontal: t.spacing(4), marginTop: t.spacing(4),
       }]}>
         <Ionicons name="search" size={18} color={t.colors.textMuted} />
         <TextInput
@@ -147,14 +143,14 @@ function FilterChip({ label, active, onPress }: { label: string; active: boolean
       style={[
         styles.chip,
         {
-          backgroundColor: active ? t.colors.primary : t.colors.surfaceAlt,
+          backgroundColor: active ? t.colors.accent : t.colors.surfaceAlt,
           borderRadius: t.radius.sm,
         },
       ]}
     >
       <Text style={{
         color: active ? t.colors.textInverse : t.colors.text,
-        fontWeight: '600',
+        fontFamily: t.font.bold,
         fontSize: t.fontSize.xs,
       }}>{label}</Text>
     </Pressable>
@@ -172,15 +168,17 @@ function EntryCard({
   const t = useTheme();
   const meta = KIND_META[entry.kind];
   const dimmed = entry.kind === 'goal' && entry.done;
+  const kindColor = entry.kind === 'goal' ? t.colors.accentStrong : entry.kind === 'wish' ? t.colors.primary : t.colors.textMuted;
+  const kindSoft = entry.kind === 'goal' ? t.colors.accentSoft : entry.kind === 'wish' ? t.colors.primarySoft : t.colors.surfaceAlt;
   return (
     <Pressable onPress={onPress}>
       <Card style={{ marginBottom: 10, opacity: dimmed ? 0.55 : 1 }}>
         <View style={styles.headerRow}>
           <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-            <View style={[styles.iconBox, { backgroundColor: t.colors.primarySoft, borderRadius: t.radius.sm }]}>
-              <Ionicons name={meta.icon} size={14} color={t.colors.primary} />
+            <View style={[styles.iconBox, { backgroundColor: kindSoft, borderRadius: t.radius.sm }]}>
+              <Ionicons name={meta.icon} size={14} color={kindColor} />
             </View>
-            <Text style={{ color: t.colors.primary, fontSize: t.fontSize.xs, fontWeight: '600', marginLeft: 6 }}>
+            <Text style={{ color: kindColor, fontSize: t.fontSize.xs, fontFamily: t.font.extrabold, marginLeft: 6, letterSpacing: 0.5 }}>
               {meta.label.toUpperCase()}
             </Text>
           </View>
@@ -189,7 +187,7 @@ function EntryCard({
               <Ionicons
                 name={entry.done ? 'checkbox' : 'square-outline'}
                 size={20}
-                color={entry.done ? t.colors.primary : t.colors.textMuted}
+                color={entry.done ? t.colors.accentStrong : t.colors.textMuted}
                 onPress={onToggleDone}
               />
             ) : null}
@@ -198,14 +196,14 @@ function EntryCard({
         </View>
         {entry.title ? (
           <Text style={{
-            color: t.colors.text, fontSize: t.fontSize.md, fontWeight: '700', marginTop: 8,
+            color: t.colors.text, fontSize: t.fontSize.md, fontFamily: t.font.extrabold, marginTop: 8,
             textDecorationLine: dimmed ? 'line-through' : 'none',
           }}>
             {entry.title}
           </Text>
         ) : null}
         {entry.text ? (
-          <Text style={{ color: t.colors.text, fontSize: t.fontSize.sm, marginTop: entry.title ? 4 : 8, lineHeight: 20 }} numberOfLines={5}>
+          <Text style={{ color: t.colors.text, fontSize: t.fontSize.sm, fontFamily: t.font.medium, marginTop: entry.title ? 4 : 8, lineHeight: 20 }} numberOfLines={5}>
             {entry.text}
           </Text>
         ) : null}

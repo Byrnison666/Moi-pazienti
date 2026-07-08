@@ -8,6 +8,7 @@ import { useData } from '../context/DataContext';
 import { AppointmentCard } from '../components/AppointmentCard';
 import { EmptyState } from '../components/EmptyState';
 import { AppButton } from '../components/AppButton';
+import { ListScreenHeader } from '../components/ListScreenHeader';
 import { compareDates, isFutureDate } from '../utils/date';
 import { getFloatingActionBottom, getListBottomPadding } from '../navigation/tabBarMetrics';
 import { Appointment } from '../types';
@@ -56,14 +57,9 @@ export function ScheduleScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: t.colors.background }} edges={['top']}>
-      <View style={{ paddingHorizontal: t.spacing(4), paddingTop: t.spacing(2) }}>
-        <Text style={{ color: t.colors.text, fontSize: t.fontSize.xxl, fontWeight: '700' }}>Расписание</Text>
-        <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.sm, marginTop: 2 }}>
-          Все приемы пациентов
-        </Text>
-      </View>
+      <ListScreenHeader title="Расписание" subtitle="Все приемы пациентов" />
 
-      <View style={[styles.tabs, { marginHorizontal: t.spacing(4), marginTop: t.spacing(3), backgroundColor: t.colors.surfaceAlt, borderRadius: t.radius.md }]}>
+      <View style={[styles.tabs, { marginHorizontal: t.spacing(4), marginTop: t.spacing(4), backgroundColor: t.colors.surfaceAlt, borderRadius: t.radius.md }]}>
         <TabBtn label={`Предстоящие (${upcoming.length})`} active={tab === 'upcoming'} onPress={() => setTab('upcoming')} />
         <TabBtn label={`Прошедшие (${past.length})`} active={tab === 'past'} onPress={() => setTab('past')} />
       </View>
@@ -112,7 +108,7 @@ function TabBtn({ label, active, onPress }: { label: string; active: boolean; on
         { backgroundColor: active ? t.colors.surface : 'transparent', borderRadius: t.radius.sm },
       ]}
     >
-      <Text style={{ color: active ? t.colors.primary : t.colors.textMuted, fontWeight: '600', fontSize: 14 }}>{label}</Text>
+      <Text style={{ color: active ? t.colors.accentStrong : t.colors.textMuted, fontFamily: t.font.bold, fontSize: 14 }}>{label}</Text>
     </Pressable>
   );
 }
@@ -121,8 +117,8 @@ function DateHeader({ iso }: { iso: string }) {
   const t = useTheme();
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
-      <Ionicons name="ellipse" size={6} color={t.colors.primary} />
-      <Text style={{ color: t.colors.text, fontSize: t.fontSize.md, fontWeight: '700', marginLeft: 8 }}>
+      <Ionicons name="ellipse" size={6} color={t.colors.accent} />
+      <Text style={{ color: t.colors.text, fontSize: t.fontSize.md, fontFamily: t.font.extrabold, marginLeft: 8 }}>
         {(() => {
           const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
           if (!m) return iso;

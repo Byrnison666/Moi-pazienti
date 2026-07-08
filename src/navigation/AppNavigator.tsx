@@ -2,15 +2,15 @@ import React from 'react';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons } from '@expo/vector-icons';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '../context/ThemeContext';
+import { CustomTabBar } from './CustomTabBar';
 import {
   AddPatientStackParamList,
   NotesStackParamList,
   PatientsStackParamList,
   QuestionnairesStackParamList,
+  RootStackParamList,
   RootTabParamList,
   ScheduleStackParamList,
   SettingsStackParamList,
@@ -33,7 +33,6 @@ import { JournalEntryEditScreen } from '../screens/JournalEntryEditScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { SyncSettingsScreen } from '../screens/SyncSettingsScreen';
 import { SyncStatusOverlay } from '../components/SyncStatusOverlay';
-import { TAB_BAR_BASE_HEIGHT } from './tabBarMetrics';
 
 const PatientsStack = createNativeStackNavigator<PatientsStackParamList>();
 const ScheduleStack = createNativeStackNavigator<ScheduleStackParamList>();
@@ -42,6 +41,7 @@ const QuestionnairesStack = createNativeStackNavigator<QuestionnairesStackParamL
 const NotesStack = createNativeStackNavigator<NotesStackParamList>();
 const SettingsStack = createNativeStackNavigator<SettingsStackParamList>();
 const Tab = createBottomTabNavigator<RootTabParamList>();
+const RootStack = createNativeStackNavigator<RootStackParamList>();
 
 // Общие опции стека. Native-header отключён — шапку рисует ScreenHeader
 // внутри каждого экрана (native-header v6 не отступает под статус-бар в
@@ -115,9 +115,23 @@ function SettingsStackNav() {
   );
 }
 
+function MainTabsNav() {
+  return (
+    <Tab.Navigator
+      screenOptions={{ headerShown: false }}
+      tabBar={(props) => <CustomTabBar {...props} />}
+    >
+      <Tab.Screen name="PatientsTab" component={PatientsStackNav} options={{ tabBarLabel: 'Пациенты' }} />
+      <Tab.Screen name="ScheduleTab" component={ScheduleStackNav} options={{ tabBarLabel: 'Расписание' }} />
+      <Tab.Screen name="AddPatientTab" component={AddPatientStackNav} options={{ tabBarLabel: 'Добавить' }} />
+      <Tab.Screen name="NotesTab" component={NotesStackNav} options={{ tabBarLabel: 'Заметки' }} />
+      <Tab.Screen name="QuestionnairesTab" component={QuestionnairesStackNav} options={{ tabBarLabel: 'Анкеты' }} />
+    </Tab.Navigator>
+  );
+}
+
 export function AppNavigator() {
   const t = useTheme();
-  const insets = useSafeAreaInsets();
   const navTheme = t.mode === 'dark'
     ? { ...DarkTheme, colors: { ...DarkTheme.colors, background: t.colors.background, card: t.colors.surface, primary: t.colors.primary, text: t.colors.text, border: t.colors.border } }
     : { ...DefaultTheme, colors: { ...DefaultTheme.colors, background: t.colors.background, card: t.colors.surface, primary: t.colors.primary, text: t.colors.text, border: t.colors.border } };
@@ -125,39 +139,10 @@ export function AppNavigator() {
   return (
     <NavigationContainer theme={navTheme}>
       <SyncStatusOverlay />
-      <Tab.Navigator
-        screenOptions={({ route }) => ({
-          headerShown: false,
-          tabBarActiveTintColor: t.colors.primary,
-          tabBarInactiveTintColor: t.colors.textMuted,
-          tabBarStyle: {
-            backgroundColor: t.colors.surface,
-            borderTopColor: t.colors.border,
-            height: TAB_BAR_BASE_HEIGHT + insets.bottom,
-            paddingBottom: 8 + insets.bottom,
-            paddingTop: 6,
-          },
-          tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
-          tabBarIcon: ({ color, size }) => {
-            const map: Record<string, keyof typeof Ionicons.glyphMap> = {
-              PatientsTab: 'people-outline',
-              ScheduleTab: 'calendar-outline',
-              AddPatientTab: 'add-circle',
-              NotesTab: 'book-outline',
-              QuestionnairesTab: 'clipboard-outline',
-              SettingsTab: 'settings-outline',
-            };
-            return <Ionicons name={map[route.name] ?? 'ellipse-outline'} size={size} color={color} />;
-          },
-        })}
-      >
-        <Tab.Screen name="PatientsTab" component={PatientsStackNav} options={{ tabBarLabel: 'Пациенты' }} />
-        <Tab.Screen name="ScheduleTab" component={ScheduleStackNav} options={{ tabBarLabel: 'Расписание' }} />
-        <Tab.Screen name="AddPatientTab" component={AddPatientStackNav} options={{ tabBarLabel: 'Добавить' }} />
-        <Tab.Screen name="NotesTab" component={NotesStackNav} options={{ tabBarLabel: 'Заметки' }} />
-        <Tab.Screen name="QuestionnairesTab" component={QuestionnairesStackNav} options={{ tabBarLabel: 'Анкеты' }} />
-        <Tab.Screen name="SettingsTab" component={SettingsStackNav} options={{ tabBarLabel: 'Настройки' }} />
-      </Tab.Navigator>
+      <RootStack.Navigator screenOptions={{ headerShown: false }}>
+        <RootStack.Screen name="MainTabs" component={MainTabsNav} />
+        <RootStack.Screen name="Settings" component={SettingsStackNav} />
+      </RootStack.Navigator>
     </NavigationContainer>
   );
 }

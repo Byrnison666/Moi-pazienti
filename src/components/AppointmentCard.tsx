@@ -17,8 +17,8 @@ interface Props {
 export function AppointmentCard({ appointment, patientName, onPress, onEdit, onDelete }: Props) {
   const t = useTheme();
   const future = isFutureDate(appointment.date);
-  const accent = future ? t.colors.primary : t.colors.textMuted;
-  const accentSoft = future ? t.colors.primarySoft : t.colors.surfaceAlt;
+  const accent = future ? t.colors.accentStrong : t.colors.textMuted;
+  const accentSoft = future ? t.colors.accentSoft : t.colors.surfaceAlt;
 
   return (
     <Card onPress={onPress} style={{ marginBottom: 10 }}>
@@ -27,20 +27,20 @@ export function AppointmentCard({ appointment, patientName, onPress, onEdit, onD
           <Ionicons name={future ? 'calendar' : 'time-outline'} size={20} color={accent} />
         </View>
         <View style={{ flex: 1 }}>
-          <Text style={{ color: t.colors.text, fontSize: t.fontSize.md, fontWeight: '600' }}>
+          <Text style={{ color: t.colors.text, fontSize: t.fontSize.md, fontFamily: t.font.extrabold }}>
             {formatRelativeDate(appointment.date)}
             {appointment.time ? ` • ${appointment.time}` : ''}
           </Text>
-          <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.xs, marginTop: 2 }}>
+          <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.xs, fontFamily: t.font.medium, marginTop: 2 }}>
             {formatDateLong(appointment.date)}
           </Text>
           {patientName ? (
-            <Text style={{ color: t.colors.text, fontSize: t.fontSize.sm, marginTop: 6, fontWeight: '500' }} numberOfLines={1}>
+            <Text style={{ color: t.colors.text, fontSize: t.fontSize.sm, fontFamily: t.font.bold, marginTop: 6 }} numberOfLines={1}>
               {patientName}
             </Text>
           ) : null}
           {appointment.description ? (
-            <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.sm, marginTop: 4 }} numberOfLines={2}>
+            <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.sm, fontFamily: t.font.medium, marginTop: 4 }} numberOfLines={2}>
               {appointment.description}
             </Text>
           ) : null}

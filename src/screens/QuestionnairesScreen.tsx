@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useTheme } from '../context/ThemeContext';
@@ -7,6 +7,7 @@ import { useData } from '../context/DataContext';
 import { QuestionnaireTemplateCard } from '../components/QuestionnaireTemplateCard';
 import { EmptyState } from '../components/EmptyState';
 import { AppButton } from '../components/AppButton';
+import { ListScreenHeader } from '../components/ListScreenHeader';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { QuestionnairesStackParamList } from '../navigation/types';
 import { getFloatingActionBottom, getListBottomPadding } from '../navigation/tabBarMetrics';
@@ -21,12 +22,7 @@ export function QuestionnairesScreen({ navigation }: Props) {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: t.colors.background }} edges={['top']}>
-      <View style={{ paddingHorizontal: t.spacing(4), paddingTop: t.spacing(2) }}>
-        <Text style={{ color: t.colors.text, fontSize: t.fontSize.xxl, fontWeight: '700' }}>Анкеты</Text>
-        <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.sm, marginTop: 2 }}>
-          Создавайте свои шаблоны и заполняйте их для пациентов
-        </Text>
-      </View>
+      <ListScreenHeader title="Анкеты" subtitle="Создавайте свои шаблоны и заполняйте их для пациентов" />
 
       {data.templates.length === 0 ? (
         <EmptyState
