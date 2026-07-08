@@ -1,19 +1,21 @@
 import React, { useMemo, useState } from 'react';
 import { FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../context/ThemeContext';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { useData } from '../context/DataContext';
 import { Card } from '../components/Card';
 import { EmptyState } from '../components/EmptyState';
+import { getListBottomPadding } from '../navigation/tabBarMetrics';
 
 export function PickPatientForAppointmentScreen() {
   const t = useTheme();
   const navigation = useNavigation<any>();
   const { data } = useData();
   const [query, setQuery] = useState('');
+  const insets = useSafeAreaInsets();
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -43,7 +45,7 @@ export function PickPatientForAppointmentScreen() {
         <FlatList
           data={filtered}
           keyExtractor={p => p.id}
-          contentContainerStyle={{ paddingHorizontal: t.spacing(4), paddingBottom: 60 }}
+          contentContainerStyle={{ paddingHorizontal: t.spacing(4), paddingBottom: getListBottomPadding(insets.bottom) }}
           renderItem={({ item }) => (
             <Card
               onPress={() => navigation.replace('AppointmentEdit', { patientId: item.id })}

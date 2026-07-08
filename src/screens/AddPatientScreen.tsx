@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as DocumentPicker from 'expo-document-picker';
 import { useNavigation } from '@react-navigation/native';
@@ -16,6 +16,7 @@ import { ConfirmDialog } from '../components/ConfirmDialog';
 import { QuestionnaireAnswerField } from '../components/QuestionnaireAnswerField';
 import { newId } from '../utils/id';
 import { calcAge, nowISO, todayISODate } from '../utils/date';
+import { getListBottomPadding } from '../navigation/tabBarMetrics';
 import {
   Appointment, Note, PatientFile, PatientQuestionnaire,
   QuestionnaireAnswer, QuestionnaireTemplate,
@@ -36,6 +37,7 @@ export function AddPatientScreen() {
   const t = useTheme();
   const { addPatient, data } = useData();
   const navigation = useNavigation<any>();
+  const insets = useSafeAreaInsets();
 
   const [fullName, setFullName] = useState('');
   const [birthDate, setBirthDate] = useState<string | undefined>();
@@ -174,7 +176,7 @@ export function AddPatientScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: t.colors.background }} edges={['top']}>
-      <ScrollView contentContainerStyle={{ padding: t.spacing(4), paddingBottom: 80 }}>
+      <ScrollView contentContainerStyle={{ padding: t.spacing(4), paddingBottom: getListBottomPadding(insets.bottom) }}>
         <View style={{ marginBottom: t.spacing(4) }}>
           <Text style={{ color: t.colors.text, fontSize: t.fontSize.xxl, fontWeight: '700' }}>Новый пациент</Text>
           <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.sm, marginTop: 2 }}>

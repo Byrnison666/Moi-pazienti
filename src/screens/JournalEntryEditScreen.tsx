@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useTheme } from '../context/ThemeContext';
@@ -12,6 +12,7 @@ import { AppButton } from '../components/AppButton';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { NotesStackParamList } from '../navigation/types';
 import { JournalKind } from '../types';
+import { getListBottomPadding } from '../navigation/tabBarMetrics';
 
 type Props = NativeStackScreenProps<NotesStackParamList, 'JournalEntryEdit'>;
 
@@ -23,6 +24,7 @@ const KIND_OPTIONS: { kind: JournalKind; label: string; icon: keyof typeof Ionic
 
 export function JournalEntryEditScreen({ navigation, route }: Props) {
   const t = useTheme();
+  const insets = useSafeAreaInsets();
   const { data, addJournalEntry, updateJournalEntry, deleteJournalEntry } = useData();
   const entry = route.params.entryId ? data.journal.find(e => e.id === route.params.entryId) : null;
 
@@ -57,7 +59,7 @@ export function JournalEntryEditScreen({ navigation, route }: Props) {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: t.colors.background }} edges={['bottom']}>
       <ScreenHeader title="Запись" />
-      <ScrollView contentContainerStyle={{ padding: t.spacing(4) }}>
+      <ScrollView contentContainerStyle={{ padding: t.spacing(4), paddingBottom: getListBottomPadding(insets.bottom) }}>
         <Card>
           <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.sm, marginBottom: 8 }}>Тип записи</Text>
           <View style={styles.kindRow}>

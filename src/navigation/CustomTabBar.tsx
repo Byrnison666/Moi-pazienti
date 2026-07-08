@@ -12,6 +12,13 @@ const ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
   QuestionnairesTab: 'clipboard-outline',
 };
 
+const ICONS_ACTIVE: Record<string, keyof typeof Ionicons.glyphMap> = {
+  PatientsTab: 'people',
+  ScheduleTab: 'calendar',
+  NotesTab: 'book',
+  QuestionnairesTab: 'clipboard',
+};
+
 const LABELS: Record<string, string> = {
   PatientsTab: 'Пациенты',
   ScheduleTab: 'Расписание',
@@ -80,12 +87,11 @@ export function CustomTabBar({ state, descriptors, navigation, insets }: BottomT
 
         return (
           <Pressable key={route.key} onPress={onPress} style={styles.navItem}>
-            <View style={[styles.dot, { backgroundColor: t.colors.accent, opacity: isFocused ? 1 : 0 }]} />
             <Ionicons
-              name={ICONS[route.name] ?? 'ellipse-outline'}
-              size={23}
+              name={(isFocused ? ICONS_ACTIVE[route.name] : ICONS[route.name]) ?? 'ellipse-outline'}
+              size={isFocused ? 27 : 23}
               color={color}
-              style={{ transform: [{ translateY: isFocused ? -3 : 0 }, { scale: isFocused ? 1.12 : 1 }] }}
+              style={{ transform: [{ translateY: isFocused ? -3 : 0 }] }}
             />
             <Text style={{ fontSize: 10, fontFamily: t.font.bold, color, marginTop: 3, opacity: isFocused ? 1 : 0.75 }}>
               {label ?? LABELS[route.name] ?? route.name}
@@ -112,7 +118,6 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   navItem: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  dot: { position: 'absolute', top: -2, width: 5, height: 5, borderRadius: 3 },
   fab: {
     width: 60, height: 60, borderRadius: 22, marginTop: -26,
     alignItems: 'center', justifyContent: 'center',

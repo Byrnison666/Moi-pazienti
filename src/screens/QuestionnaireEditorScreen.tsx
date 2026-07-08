@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useTheme } from '../context/ThemeContext';
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -13,11 +13,13 @@ import { QuestionnaireQuestionEditor } from '../components/QuestionnaireQuestion
 import { newId } from '../utils/id';
 import { QuestionnaireQuestion } from '../types';
 import { QuestionnairesStackParamList } from '../navigation/types';
+import { getListBottomPadding } from '../navigation/tabBarMetrics';
 
 type Props = NativeStackScreenProps<QuestionnairesStackParamList, 'QuestionnaireEditor'>;
 
 export function QuestionnaireEditorScreen({ navigation, route }: Props) {
   const t = useTheme();
+  const insets = useSafeAreaInsets();
   const { data, addTemplate, updateTemplate } = useData();
   const editing = route.params.templateId ? data.templates.find(tpl => tpl.id === route.params.templateId) : null;
 
@@ -82,7 +84,7 @@ export function QuestionnaireEditorScreen({ navigation, route }: Props) {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: t.colors.background }} edges={['bottom']}>
       <ScreenHeader title="Шаблон анкеты" />
-      <ScrollView contentContainerStyle={{ padding: t.spacing(4), paddingBottom: 80 }}>
+      <ScrollView contentContainerStyle={{ padding: t.spacing(4), paddingBottom: getListBottomPadding(insets.bottom) }}>
         <Card>
           <AppInput
             label="Название"

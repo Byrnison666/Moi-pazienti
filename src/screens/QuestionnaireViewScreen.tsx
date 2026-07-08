@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScrollView, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useTheme } from '../context/ThemeContext';
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -10,11 +10,13 @@ import { AppButton } from '../components/AppButton';
 import { QuestionnaireAnswerField } from '../components/QuestionnaireAnswerField';
 import { formatDateLong } from '../utils/date';
 import { PatientsStackParamList } from '../navigation/types';
+import { getListBottomPadding } from '../navigation/tabBarMetrics';
 
 type Props = NativeStackScreenProps<PatientsStackParamList, 'QuestionnaireView'>;
 
 export function QuestionnaireViewScreen({ navigation, route }: Props) {
   const t = useTheme();
+  const insets = useSafeAreaInsets();
   const { data } = useData();
   const patient = data.patients.find(p => p.id === route.params.patientId);
   const pq = patient?.questionnaires.find(q => q.id === route.params.pqId);
@@ -25,7 +27,7 @@ export function QuestionnaireViewScreen({ navigation, route }: Props) {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: t.colors.background }} edges={['bottom']}>
       <ScreenHeader title="Просмотр анкеты" />
-      <ScrollView contentContainerStyle={{ padding: t.spacing(4) }}>
+      <ScrollView contentContainerStyle={{ padding: t.spacing(4), paddingBottom: getListBottomPadding(insets.bottom) }}>
         <Card>
           <Text style={{ color: t.colors.text, fontSize: t.fontSize.xl, fontWeight: '700' }}>{pq.templateTitle}</Text>
           <Text style={{ color: t.colors.textMuted, fontSize: t.fontSize.sm, marginTop: 4 }}>

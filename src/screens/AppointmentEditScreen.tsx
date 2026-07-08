@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ScrollView, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useTheme } from '../context/ThemeContext';
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -12,11 +12,13 @@ import { DatePickerField } from '../components/DatePickerField';
 import { TimePickerField } from '../components/TimePickerField';
 import { todayISODate } from '../utils/date';
 import { PatientsStackParamList } from '../navigation/types';
+import { getListBottomPadding } from '../navigation/tabBarMetrics';
 
 type Props = NativeStackScreenProps<PatientsStackParamList, 'AppointmentEdit'>;
 
 export function AppointmentEditScreen({ navigation, route }: Props) {
   const t = useTheme();
+  const insets = useSafeAreaInsets();
   const { data, addAppointment, updateAppointment } = useData();
   const patient = data.patients.find(p => p.id === route.params.patientId);
   const existing = route.params.appointmentId
@@ -46,7 +48,7 @@ export function AppointmentEditScreen({ navigation, route }: Props) {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: t.colors.background }} edges={['bottom']}>
       <ScreenHeader title="Прием" />
-      <ScrollView contentContainerStyle={{ padding: t.spacing(4) }}>
+      <ScrollView contentContainerStyle={{ padding: t.spacing(4), paddingBottom: getListBottomPadding(insets.bottom) }}>
         <Card>
           <DatePickerField
             label="Дата приема"
