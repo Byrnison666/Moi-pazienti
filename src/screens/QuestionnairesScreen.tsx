@@ -36,6 +36,7 @@ export function QuestionnairesScreen({ navigation }: Props) {
         <FlatList
           data={data.templates}
           keyExtractor={tpl => tpl.id}
+          style={{ flex: 1 }}
           contentContainerStyle={{ paddingHorizontal: t.spacing(4), paddingTop: t.spacing(4) }}
           ListFooterComponent={<View style={{ height: getFabListBottomPadding(insets.bottom) }} />}
           renderItem={({ item }) => (

@@ -98,8 +98,9 @@ export function PatientsScreen({ navigation }: Props) {
         <FlatList
           data={filtered}
           keyExtractor={p => p.id}
-          // Без shorthand `padding`: вместе с paddingBottom он даёт неопределённый
-          // порядок применения. Нижний отступ — распоркой, её Yoga не проглотит.
+          // flex:1 обязателен: без него список не сжимается до высоты экрана,
+          // его низ (вместе с футером) уезжает под таб-бар и дальше за экран.
+          style={{ flex: 1 }}
           contentContainerStyle={{ paddingHorizontal: t.spacing(4), paddingTop: t.spacing(4) }}
           ListFooterComponent={<View style={{ height: getListBottomPadding(insets.bottom) }} />}
           renderItem={({ item }) => (

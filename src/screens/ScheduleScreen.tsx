@@ -76,6 +76,7 @@ export function ScheduleScreen() {
         <SectionList
           sections={grouped}
           keyExtractor={r => r.appointment.id}
+          style={{ flex: 1 }}
           contentContainerStyle={{ paddingHorizontal: t.spacing(4), paddingTop: t.spacing(4) }}
           ListFooterComponent={<View style={{ height: getFabListBottomPadding(insets.bottom) }} />}
           renderSectionHeader={({ section }) => <DateHeader iso={section.title} />}

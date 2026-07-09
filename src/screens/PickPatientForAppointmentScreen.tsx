@@ -45,6 +45,7 @@ export function PickPatientForAppointmentScreen() {
         <FlatList
           data={filtered}
           keyExtractor={p => p.id}
+          style={{ flex: 1 }}
           contentContainerStyle={{ paddingHorizontal: t.spacing(4), paddingBottom: getListBottomPadding(insets.bottom) }}
           renderItem={({ item }) => (
             <Card
