@@ -37,8 +37,11 @@ export function QuestionnairesScreen({ navigation }: Props) {
           data={data.templates}
           keyExtractor={tpl => tpl.id}
           style={{ flex: 1 }}
-          contentContainerStyle={{ paddingHorizontal: t.spacing(4), paddingTop: t.spacing(4) }}
-          ListFooterComponent={<View style={{ height: getFabListBottomPadding(insets.bottom) }} />}
+          contentContainerStyle={{
+            paddingHorizontal: t.spacing(4),
+            paddingTop: t.spacing(4),
+            paddingBottom: getFabListBottomPadding(insets.bottom),
+          }}
           renderItem={({ item }) => (
             <QuestionnaireTemplateCard
               template={item}

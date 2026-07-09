@@ -101,8 +101,11 @@ export function NotesScreen() {
           data={filtered}
           keyExtractor={e => e.id}
           style={{ flex: 1 }}
-          contentContainerStyle={{ paddingHorizontal: t.spacing(4), paddingTop: t.spacing(3) }}
-          ListFooterComponent={<View style={{ height: getFabListBottomPadding(insets.bottom) }} />}
+          contentContainerStyle={{
+            paddingHorizontal: t.spacing(4),
+            paddingTop: t.spacing(3),
+            paddingBottom: getFabListBottomPadding(insets.bottom),
+          }}
           renderItem={({ item }) => (
             <EntryCard
               entry={item}

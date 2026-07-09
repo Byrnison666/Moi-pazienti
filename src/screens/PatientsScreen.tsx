@@ -10,7 +10,7 @@ import { EmptyState } from '../components/EmptyState';
 import { ListScreenHeader } from '../components/ListScreenHeader';
 import { FilterChip } from '../components/FilterChip';
 import { PatientsStackParamList } from '../navigation/types';
-import { getListBottomPadding } from '../navigation/tabBarMetrics';
+import { getFabListBottomPadding } from '../navigation/tabBarMetrics';
 import { useNavigation } from '@react-navigation/native';
 import { CommonActions } from '@react-navigation/native';
 import { isFutureDate } from '../utils/date';
@@ -98,11 +98,15 @@ export function PatientsScreen({ navigation }: Props) {
         <FlatList
           data={filtered}
           keyExtractor={p => p.id}
-          // flex:1 обязателен: без него список не сжимается до высоты экрана,
-          // его низ (вместе с футером) уезжает под таб-бар и дальше за экран.
           style={{ flex: 1 }}
-          contentContainerStyle={{ paddingHorizontal: t.spacing(4), paddingTop: t.spacing(4) }}
-          ListFooterComponent={<View style={{ height: getListBottomPadding(insets.bottom) }} />}
+          // Отступ снизу — paddingBottom в contentContainerStyle, как в расписании:
+          // ListFooterComponent во FlatList на устройстве не давал зазора.
+          // Без shorthand `padding`: он конфликтует с paddingBottom.
+          contentContainerStyle={{
+            paddingHorizontal: t.spacing(4),
+            paddingTop: t.spacing(4),
+            paddingBottom: getFabListBottomPadding(insets.bottom),
+          }}
           renderItem={({ item }) => (
             <PatientCard patient={item} onPress={() => navigation.navigate('PatientDetail', { patientId: item.id })} />
           )}
