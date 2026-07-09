@@ -1,6 +1,8 @@
 import { AppState, AppStateStatus } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { AppData } from '../types';
+import { SCHEMA_VERSION } from '../storage';
+import { canonical, mergeAppData } from './merge';
 
 // Синхронизация снапшота AppData по WebDAV на Яндекс.Диск.
 // Один JSON-файл, LWW по AppData.updatedAt. Креды — в expo-secure-store,
@@ -219,14 +221,21 @@ async function pull(local: AppData): Promise<void> {
     return;
   }
 
-  // Demo-aware защита слияния. "Реальные данные" = что-то помимо демо/пустого.
-  // Иначе свежий updatedAt локальной демки затёр бы реальную облачную базу
-  // (и наоборот) при первом запуске.
+  // Снапшот новее, чем понимает эта сборка: сливать вслепую нельзя — потеряем
+  // поля, которых не знаем. Требуется обновление приложения.
+  if ((remote.schemaVersion ?? 1) > SCHEMA_VERSION) {
+    console.warn('sync: remote schemaVersion', remote.schemaVersion, '> local', SCHEMA_VERSION);
+    setState('error');
+    return;
+  }
+
+  // Demo-aware защита. "Реальные данные" = что-то помимо демо/пустого.
+  // Без неё демка с первого запуска слилась бы с боевой базой и уехала в облако.
   const remoteReal = hasRealData(remote);
   const localReal = hasRealData(local);
 
   if (remoteReal && !localReal) {
-    // Облако — реальная база, локально только демо/пусто: принимаем облако.
+    // Облако — реальная база, локально только демо/пусто: принимаем облако целиком.
     onRemoteSnapshot?.(remote);
     setState('idle', new Date().toISOString());
     return;
@@ -237,17 +246,19 @@ async function pull(local: AppData): Promise<void> {
     return;
   }
 
-  // Обе стороны реальные (или обе демо/пустые) — обычный LWW по updatedAt.
-  const remoteAt = remote.updatedAt ?? '';
-  const localAt = local.updatedAt ?? '';
-  if (remoteAt > localAt) {
-    onRemoteSnapshot?.(remote);
-    setState('idle', new Date().toISOString());
-  } else if (localAt > remoteAt) {
-    await doPush(local, auth);
-  } else {
-    setState('idle', new Date().toISOString());
+  // Обе стороны реальные (или обе демо/пустые) — слияние по сущностям.
+  // updatedAt больше не арбитр: он решал судьбу всего снапшота и терял правки.
+  const merged = mergeAppData(local, remote);
+  const mergedCanon = canonical(merged);
+
+  if (mergedCanon !== canonical(local)) {
+    onRemoteSnapshot?.(merged);
   }
+  if (mergedCanon !== canonical(remote)) {
+    await doPush(merged, auth);
+    return;
+  }
+  setState('idle', new Date().toISOString());
 }
 
 async function doPush(data: AppData, auth: string): Promise<void> {

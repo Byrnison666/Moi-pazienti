@@ -3,6 +3,7 @@ import {
   AppData,
   Appointment,
   ID,
+  ISODate,
   JournalEntry,
   Note,
   Patient,
@@ -118,6 +119,13 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     patients: state.patients.map(p => (p.id === id ? fn(p) : p)),
   });
 
+  // Надгробие на удалённую сущность: без него запись воскреснет со второго
+  // устройства при слиянии. См. sync/merge.ts.
+  const withTombstone = (state: AppData, id: ID, at: ISODate): AppData => ({
+    ...state,
+    tombstones: [...state.tombstones.filter(t => t.id !== id), { id, deletedAt: at }],
+  });
+
   const value: DataContextValue = useMemo(() => ({
     ready,
     data,
@@ -152,7 +160,11 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     },
 
     deletePatient: (id) => {
-      persist({ ...dataRef.current, patients: dataRef.current.patients.filter(p => p.id !== id) });
+      const at = nowISO();
+      persist(withTombstone(
+        { ...dataRef.current, patients: dataRef.current.patients.filter(p => p.id !== id) },
+        id, at,
+      ));
     },
 
     addNote: (patientId, n) => {
@@ -176,11 +188,11 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
     deleteNote: (patientId, noteId) => {
       const t = nowISO();
-      persist(updatePatientById(dataRef.current, patientId, p => ({
+      persist(withTombstone(updatePatientById(dataRef.current, patientId, p => ({
         ...p,
         notes: p.notes.filter(n => n.id !== noteId),
         updatedAt: t,
-      })));
+      })), noteId, t));
     },
 
     addAppointment: (patientId, a) => {
@@ -205,11 +217,11 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
     deleteAppointment: (patientId, apptId) => {
       const t = nowISO();
-      persist(updatePatientById(dataRef.current, patientId, p => ({
+      persist(withTombstone(updatePatientById(dataRef.current, patientId, p => ({
         ...p,
         appointments: p.appointments.filter(a => a.id !== apptId),
         updatedAt: t,
-      })));
+      })), apptId, t));
     },
 
     addFile: (patientId, f) => {
@@ -224,11 +236,11 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
     deleteFile: (patientId, fileId) => {
       const t = nowISO();
-      persist(updatePatientById(dataRef.current, patientId, p => ({
+      persist(withTombstone(updatePatientById(dataRef.current, patientId, p => ({
         ...p,
         files: p.files.filter(f => f.id !== fileId),
         updatedAt: t,
-      })));
+      })), fileId, t));
     },
 
     addTemplate: (t) => {
@@ -247,7 +259,11 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     },
 
     deleteTemplate: (id) => {
-      persist({ ...dataRef.current, templates: dataRef.current.templates.filter(t => t.id !== id) });
+      const at = nowISO();
+      persist(withTombstone(
+        { ...dataRef.current, templates: dataRef.current.templates.filter(t => t.id !== id) },
+        id, at,
+      ));
     },
 
     addPatientQuestionnaire: (q) => {
@@ -272,11 +288,11 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
     deletePatientQuestionnaire: (patientId, qId) => {
       const at = nowISO();
-      persist(updatePatientById(dataRef.current, patientId, p => ({
+      persist(withTombstone(updatePatientById(dataRef.current, patientId, p => ({
         ...p,
         questionnaires: p.questionnaires.filter(q => q.id !== qId),
         updatedAt: at,
-      })));
+      })), qId, at));
     },
 
     addJournalEntry: (e) => {
@@ -295,29 +311,42 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     },
 
     deleteJournalEntry: (id) => {
-      persist({ ...dataRef.current, journal: dataRef.current.journal.filter(e => e.id !== id) });
+      const at = nowISO();
+      persist(withTombstone(
+        { ...dataRef.current, journal: dataRef.current.journal.filter(e => e.id !== id) },
+        id, at,
+      ));
     },
 
     resetAll: async () => {
       await clearData();
+      // Намеренно без надгробий: это локальный сброс, а не удаление базы у всех.
+      // Пустой снапшот не пройдёт hasRealData() в pull() и получит облако обратно.
       const empty: AppData = {
         patients: [],
         templates: [],
         journal: [],
         demoIds: { patients: [], templates: [] },
+        tombstones: [],
         updatedAt: nowISO(),
-        schemaVersion: 1,
+        schemaVersion: SCHEMA_VERSION,
       };
       persist(empty);
     },
 
     clearDemo: () => {
       const { demoIds } = dataRef.current;
+      const at = nowISO();
+      const removed = [...demoIds.patients, ...demoIds.templates];
       persist({
         ...dataRef.current,
         patients: dataRef.current.patients.filter(p => !demoIds.patients.includes(p.id)),
         templates: dataRef.current.templates.filter(t => !demoIds.templates.includes(t.id)),
         demoIds: { patients: [], templates: [] },
+        tombstones: [
+          ...dataRef.current.tombstones.filter(t => !removed.includes(t.id)),
+          ...removed.map(id => ({ id, deletedAt: at })),
+        ],
       });
     },
 

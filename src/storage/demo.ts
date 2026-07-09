@@ -135,6 +135,7 @@ export function buildDemoData(): { data: AppData } {
       patients: [patient1Id, patient2Id],
       templates: [tplId],
     },
+    tombstones: [],
     updatedAt: now,
     schemaVersion: SCHEMA_VERSION,
   };

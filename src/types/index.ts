@@ -110,6 +110,16 @@ export interface JournalEntry {
   updatedAt: ISODate;
 }
 
+/**
+ * Надгробие: запись о том, что сущность удалена. Без него удалённый на одном
+ * устройстве пациент воскресал бы со второго при слиянии. ID сущностей — uuid,
+ * глобально уникальны, поэтому список общий для пациентов, заметок, приёмов и пр.
+ */
+export interface Tombstone {
+  id: ID;
+  deletedAt: ISODate;
+}
+
 export interface AppData {
   patients: Patient[];
   templates: QuestionnaireTemplate[];
@@ -120,7 +130,9 @@ export interface AppData {
     patients: ID[];
     templates: ID[];
   };
-  /** ISO-метка последней мутации снапшота. Используется для LWW-синка. */
+  /** Удалённые сущности. Чистятся через TOMBSTONE_TTL_DAYS после удаления. */
+  tombstones: Tombstone[];
+  /** ISO-метка последней мутации снапшота. Не арбитр слияния — см. sync/merge.ts. */
   updatedAt: ISODate;
   schemaVersion: number;
 }

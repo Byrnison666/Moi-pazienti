@@ -4,13 +4,15 @@ import { AppData, AppSettings } from '../types';
 const KEY_DATA = 'dental:data:v1';
 const KEY_SETTINGS = 'dental:settings:v1';
 
-export const SCHEMA_VERSION = 1;
+// v2: добавлены tombstones — слияние по сущностям вместо LWW по снапшоту.
+export const SCHEMA_VERSION = 2;
 
 const EMPTY_DATA: AppData = {
   patients: [],
   templates: [],
   journal: [],
   demoIds: { patients: [], templates: [] },
+  tombstones: [],
   updatedAt: new Date(0).toISOString(),
   schemaVersion: SCHEMA_VERSION,
 };
@@ -29,8 +31,10 @@ export async function loadData(): Promise<AppData | null> {
       templates: parsed.templates ?? [],
       journal: parsed.journal ?? [],
       demoIds: parsed.demoIds ?? { patients: [], templates: [] },
+      // Миграция v1 -> v2: у старого снапшота надгробий нет.
+      tombstones: parsed.tombstones ?? [],
       // Данные без метки считаем древними: иначе на каждом запуске они получали бы
-      // now() и всегда выигрывали LWW, затирая облако. От затирания пустым удалённым
+      // now() и всегда выигрывали сравнение. От затирания пустым удалённым
       // снапшотом защищает hasRealData() в pull().
       updatedAt: parsed.updatedAt ?? new Date(0).toISOString(),
       schemaVersion: parsed.schemaVersion ?? SCHEMA_VERSION,
