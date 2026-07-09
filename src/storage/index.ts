@@ -29,8 +29,10 @@ export async function loadData(): Promise<AppData | null> {
       templates: parsed.templates ?? [],
       journal: parsed.journal ?? [],
       demoIds: parsed.demoIds ?? { patients: [], templates: [] },
-      // миграция: данные без метки получают текущее время, чтобы их не затёрло пустым удалённым снапшотом
-      updatedAt: parsed.updatedAt ?? new Date().toISOString(),
+      // Данные без метки считаем древними: иначе на каждом запуске они получали бы
+      // now() и всегда выигрывали LWW, затирая облако. От затирания пустым удалённым
+      // снапшотом защищает hasRealData() в pull().
+      updatedAt: parsed.updatedAt ?? new Date(0).toISOString(),
       schemaVersion: parsed.schemaVersion ?? SCHEMA_VERSION,
     };
   } catch (e) {
