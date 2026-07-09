@@ -98,7 +98,10 @@ export function PatientsScreen({ navigation }: Props) {
         <FlatList
           data={filtered}
           keyExtractor={p => p.id}
-          contentContainerStyle={{ padding: t.spacing(4), paddingTop: t.spacing(4), paddingBottom: getListBottomPadding(insets.bottom) }}
+          // Без shorthand `padding`: вместе с paddingBottom он даёт неопределённый
+          // порядок применения. Нижний отступ — распоркой, её Yoga не проглотит.
+          contentContainerStyle={{ paddingHorizontal: t.spacing(4), paddingTop: t.spacing(4) }}
+          ListFooterComponent={<View style={{ height: getListBottomPadding(insets.bottom) }} />}
           renderItem={({ item }) => (
             <PatientCard patient={item} onPress={() => navigation.navigate('PatientDetail', { patientId: item.id })} />
           )}

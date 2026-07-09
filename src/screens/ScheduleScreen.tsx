@@ -76,7 +76,8 @@ export function ScheduleScreen() {
         <SectionList
           sections={grouped}
           keyExtractor={r => r.appointment.id}
-          contentContainerStyle={{ padding: t.spacing(4), paddingBottom: getFabListBottomPadding(insets.bottom) }}
+          contentContainerStyle={{ paddingHorizontal: t.spacing(4), paddingTop: t.spacing(4) }}
+          ListFooterComponent={<View style={{ height: getFabListBottomPadding(insets.bottom) }} />}
           renderSectionHeader={({ section }) => <DateHeader iso={section.title} />}
           renderItem={({ item }) => (
             <AppointmentCard

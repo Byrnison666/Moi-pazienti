@@ -100,7 +100,8 @@ export function NotesScreen() {
         <FlatList
           data={filtered}
           keyExtractor={e => e.id}
-          contentContainerStyle={{ padding: t.spacing(4), paddingTop: t.spacing(3), paddingBottom: getFabListBottomPadding(insets.bottom) }}
+          contentContainerStyle={{ paddingHorizontal: t.spacing(4), paddingTop: t.spacing(3) }}
+          ListFooterComponent={<View style={{ height: getFabListBottomPadding(insets.bottom) }} />}
           renderItem={({ item }) => (
             <EntryCard
               entry={item}
