@@ -2,12 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import Constants from 'expo-constants';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme, useThemeControls } from '../context/ThemeContext';
 import { Card } from '../components/Card';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { ThemeMode } from '../types';
 import { SyncState, subscribeSync } from '../sync/syncManager';
+
+// Берём из app.json, чтобы версия не разъезжалась с релизом.
+const APP_VERSION = Constants.expoConfig?.version ?? '—';
 
 export function SettingsScreen() {
   const t = useTheme();
@@ -25,7 +29,7 @@ export function SettingsScreen() {
             ПРИЛОЖЕНИЕ
           </Text>
           <InfoRow label="Название" value="Мои пациенты" />
-          <InfoRow label="Версия" value="1.3.1" />
+          <InfoRow label="Версия" value={APP_VERSION} />
         </Card>
 
         <Pressable onPress={() => nav.navigate('SyncSettings')}>
