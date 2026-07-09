@@ -2,7 +2,7 @@
   "expo": {
     "name": "Мои пациенты",
     "slug": "dental-patients",
-    "version": "1.3.1",
+    "version": "1.3.2",
     "orientation": "default",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -20,7 +20,7 @@
     },
     "android": {
       "package": "com.dentalpatients.app",
-      "versionCode": 3,
+      "versionCode": 4,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#020617"
