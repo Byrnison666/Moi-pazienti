@@ -11,7 +11,7 @@ import { AppButton } from '../components/AppButton';
 import { ListScreenHeader } from '../components/ListScreenHeader';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { JournalEntry, JournalKind } from '../types';
-import { getFloatingActionBottom, getListBottomPadding } from '../navigation/tabBarMetrics';
+import { getFloatingActionBottom, getFabListBottomPadding } from '../navigation/tabBarMetrics';
 
 type Filter = 'all' | JournalKind;
 
@@ -100,7 +100,7 @@ export function NotesScreen() {
         <FlatList
           data={filtered}
           keyExtractor={e => e.id}
-          contentContainerStyle={{ padding: t.spacing(4), paddingTop: t.spacing(3), paddingBottom: getListBottomPadding(insets.bottom) }}
+          contentContainerStyle={{ padding: t.spacing(4), paddingTop: t.spacing(3), paddingBottom: getFabListBottomPadding(insets.bottom) }}
           renderItem={({ item }) => (
             <EntryCard
               entry={item}

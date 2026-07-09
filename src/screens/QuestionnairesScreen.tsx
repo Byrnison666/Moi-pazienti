@@ -10,7 +10,7 @@ import { AppButton } from '../components/AppButton';
 import { ListScreenHeader } from '../components/ListScreenHeader';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { QuestionnairesStackParamList } from '../navigation/types';
-import { getFloatingActionBottom, getListBottomPadding } from '../navigation/tabBarMetrics';
+import { getFloatingActionBottom, getFabListBottomPadding } from '../navigation/tabBarMetrics';
 
 type Props = NativeStackScreenProps<QuestionnairesStackParamList, 'QuestionnairesList'>;
 
@@ -36,7 +36,7 @@ export function QuestionnairesScreen({ navigation }: Props) {
         <FlatList
           data={data.templates}
           keyExtractor={tpl => tpl.id}
-          contentContainerStyle={{ padding: t.spacing(4), paddingBottom: getListBottomPadding(insets.bottom) }}
+          contentContainerStyle={{ padding: t.spacing(4), paddingBottom: getFabListBottomPadding(insets.bottom) }}
           renderItem={({ item }) => (
             <QuestionnaireTemplateCard
               template={item}

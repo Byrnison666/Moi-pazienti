@@ -10,7 +10,7 @@ import { EmptyState } from '../components/EmptyState';
 import { AppButton } from '../components/AppButton';
 import { ListScreenHeader } from '../components/ListScreenHeader';
 import { compareDates, isFutureDate } from '../utils/date';
-import { getFloatingActionBottom, getListBottomPadding } from '../navigation/tabBarMetrics';
+import { getFloatingActionBottom, getFabListBottomPadding } from '../navigation/tabBarMetrics';
 import { Appointment } from '../types';
 
 interface Row { appointment: Appointment; patientId: string; patientName: string }
@@ -76,7 +76,7 @@ export function ScheduleScreen() {
         <SectionList
           sections={grouped}
           keyExtractor={r => r.appointment.id}
-          contentContainerStyle={{ padding: t.spacing(4), paddingBottom: getListBottomPadding(insets.bottom) }}
+          contentContainerStyle={{ padding: t.spacing(4), paddingBottom: getFabListBottomPadding(insets.bottom) }}
           renderSectionHeader={({ section }) => <DateHeader iso={section.title} />}
           renderItem={({ item }) => (
             <AppointmentCard
